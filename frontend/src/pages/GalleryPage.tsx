@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
-import { 
+import {
   HeartIcon, 
   EyeIcon,
   SparklesIcon,
   DocumentDuplicateIcon,
-  XMarkIcon
+  XMarkIcon,
+  ClockIcon,
+  FireIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import { galleryService, favoriteService, generationService, type GalleryImage } from '../services/api';
 
-const STYLE_FILTERS = [
-  { name: '全部', value: 'all' },
-  { name: '写实摄影', value: 'photorealistic' },
-  { name: '艺术油画', value: 'oil-painting' },
-  { name: '动漫风格', value: 'anime' },
-  { name: '水彩艺术', value: 'watercolor' },
-  { name: '赛博朋克', value: 'cyberpunk' },
-  { name: '3D渲染', value: '3d-render' },
-  { name: '建筑设计', value: 'architecture' },
+const SORT_OPTIONS = [
+  { name: '最新', value: 'latest', icon: 'ClockIcon' },
+  { name: '最热', value: 'popular', icon: 'FireIcon' },
+  { name: '浏览最多', value: 'views', icon: 'EyeIcon' },
 ];
 
 export const GalleryPage: React.FC = () => {
@@ -28,7 +25,7 @@ export const GalleryPage: React.FC = () => {
   const { isAuthenticated } = useStore();
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
-  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [selectedSort, setSelectedSort] = useState('latest');
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
@@ -44,16 +41,10 @@ export const GalleryPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    fetchGalleries();
-    fetchFavorites();
-  }, [selectedFilter]);
-
-  const fetchGalleries = async () => {
+  const fetchGalleries = useCallback(async () => {
     try {
       setLoading(true);
-      const style = selectedFilter === 'all' ? undefined : selectedFilter;
-      const data = await galleryService.getList(1, 50, style);
+      const data = await galleryService.getList(1, 50, selectedSort);
       const localImages = data.images.filter(img => {
         const url = img.images?.[0]?.url || '';
         return !url.includes('unsplash.com') && !url.includes('images.unsplash.com');
@@ -64,7 +55,12 @@ export const GalleryPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedSort]);
+
+  useEffect(() => {
+    fetchGalleries();
+    fetchFavorites();
+  }, [selectedSort, fetchGalleries, fetchFavorites]);
 
   const handleLike = async (_imageId: number) => {
     if (!isAuthenticated) {
@@ -72,9 +68,15 @@ export const GalleryPage: React.FC = () => {
       return;
     }
     try {
-      await generationService.toggleLike(_imageId);
-      toast.success('点赞成功');
-      fetchGalleries();
+      const result = await generationService.toggleLike(_imageId);
+      if (result.liked) {
+        toast.success('点赞成功');
+      } else {
+        toast.success('已取消点赞');
+      }
+      setImages(prev => prev.map(img => 
+        img.id === _imageId ? { ...img, likes_count: result.likes_count } : img
+      ));
     } catch (error) {
       toast.error('点赞失败');
     }
@@ -154,17 +156,20 @@ export const GalleryPage: React.FC = () => {
           <p className="text-lg" style={{color: 'var(--color-text-muted)'}}>发现AI生成的无限可能</p>
         </div>
 
-        <div className="flex items-center gap-3 mb-10 overflow-x-auto pb-4" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-          <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
-          {STYLE_FILTERS.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setSelectedFilter(filter.value)}
-              className={selectedFilter === filter.value ? 'filter-tag filter-tag-active' : 'filter-tag'}
-            >
-              {filter.name}
-            </button>
-          ))}
+        <div className="flex items-center gap-3 mb-10">
+          {SORT_OPTIONS.map((sort) => {
+            const Icon = sort.value === 'latest' ? ClockIcon : sort.value === 'popular' ? FireIcon : EyeIcon;
+            return (
+              <button
+                key={sort.value}
+                onClick={() => setSelectedSort(sort.value)}
+                className={selectedSort === sort.value ? 'filter-tag filter-tag-active' : 'filter-tag'}
+              >
+                <Icon className="w-4 h-4" />
+                {sort.name}
+              </button>
+            );
+          })}
         </div>
 
         {loading ? (
@@ -188,7 +193,14 @@ export const GalleryPage: React.FC = () => {
                 <div key={image.id} className="card hover-lift overflow-hidden">
                   <div 
                     className="relative cursor-pointer group"
-                    onClick={() => setSelectedImage(image)}
+                    onClick={async () => {
+                      try {
+                        const detail = await galleryService.getDetail(image.id);
+                        setSelectedImage(detail);
+                      } catch {
+                        setSelectedImage(image);
+                      }
+                    }}
                   >
                     <div className="relative aspect-[3/4] overflow-hidden">
                       {image.images && image.images[0]?.url ? (

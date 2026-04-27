@@ -1,12 +1,77 @@
 import os
 import logging
+import json
 from typing import List
 import httpx
-from tenacity import retry, stop_after_attempt, wait_exponential
 
 from .base import BaseProvider, GenerateRequest, GenerateResponse
 
 logger = logging.getLogger(__name__)
+
+# 中转站官方错误码映射
+RELAY_ERROR_MAP = {
+    "INVALID_API_KEY": "API密钥无效，请联系管理员",
+    "MODEL_NOT_FOUND": "服务配置错误，请联系管理员",
+    "FAILED_TO_AUTH": "认证失败，请联系管理员",
+    "NOT_ENOUGH_BALANCE": "账户余额不足，请联系管理员",
+    "INVALID_REQUEST_BODY": "请求格式有误，请重试",
+    "RATE_LIMIT_EXCEEDED": "请求过于频繁，请稍后再试",
+    "TOKEN_LIMIT_EXCEEDED": "内容过长，请缩短提示词后重试",
+    "SERVICE_NOT_AVAILABLE": "AI服务暂时不可用，请稍后再试",
+    "ACCESS_DENY": "无权限访问，请联系管理员",
+}
+
+# 上游服务错误码映射
+UPSTREAM_ERROR_MAP = {
+    "moderation_blocked": "您的内容包含敏感信息，请修改提示词后重试",
+    "NoCapacity": "AI服务当前负载较高，请稍后再试",
+}
+
+# HTTP状态码默认映射
+HTTP_STATUS_MAP = {
+    400: "请求参数有误，请重试",
+    401: "认证失败，请联系管理员",
+    403: "账户权限受限，请联系管理员",
+    404: "服务配置错误，请联系管理员",
+    429: "请求过于频繁，请稍后再试",
+    500: "服务端暂时不可用，请稍后再试",
+    502: "服务暂时不可用，请稍后再试",
+    503: "服务暂时不可用，请稍后再试",
+    504: "服务响应超时，请稍后再试",
+}
+
+
+def parse_error_response(response_text: str, status_code: int) -> str:
+    """解析错误响应，返回用户友好的提示"""
+    try:
+        data = json.loads(response_text)
+    except json.JSONDecodeError:
+        return HTTP_STATUS_MAP.get(status_code, "服务暂时不可用，请稍后再试")
+    
+    error_code = None
+    inner_code = None
+    
+    # 首先检查内层错误码（上游服务的错误）
+    if "message" in data and isinstance(data["message"], dict):
+        inner_error = data["message"].get("error", {})
+        inner_code = inner_error.get("code")
+        
+        if not inner_code:
+            metadata = data.get("metadata", {})
+            details = metadata.get("details", {})
+            if isinstance(details, dict):
+                inner_code = details.get("code")
+    
+    # 优先检查上游服务错误码
+    if inner_code and inner_code in UPSTREAM_ERROR_MAP:
+        return UPSTREAM_ERROR_MAP[inner_code]
+    
+    # 检查中转站官方错误码
+    error_code = data.get("reason") or data.get("code")
+    if error_code and error_code in RELAY_ERROR_MAP:
+        return RELAY_ERROR_MAP[error_code]
+    
+    return HTTP_STATUS_MAP.get(status_code, "生成失败，请稍后再试")
 
 
 class RelayAPIProvider(BaseProvider):
@@ -16,7 +81,7 @@ class RelayAPIProvider(BaseProvider):
 
     def __init__(self):
         self.api_key = os.getenv("RELAY_API_KEY") or os.getenv("OPENAI_API_KEY")
-        self.timeout = 120
+        self.timeout = 300
 
     async def health_check(self) -> bool:
         """Check if the relay API is accessible"""
@@ -33,7 +98,6 @@ class RelayAPIProvider(BaseProvider):
             logger.warning(f"Health check failed: {e}")
             return False
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=30))
     async def generate(self, req: GenerateRequest) -> GenerateResponse:
         """
         Generate images using the relay API
@@ -51,6 +115,8 @@ class RelayAPIProvider(BaseProvider):
         if not self.api_key:
             raise ValueError("RELAY_API_KEY not configured")
 
+        prompt = req.prompt.strip()
+        
         quality_map = {
             "standard": "medium",
             "hd": "high",
@@ -63,7 +129,7 @@ class RelayAPIProvider(BaseProvider):
         size_map = {
             "1024x1024": "1024x1024",
             "1024x1792": "1024x1536",
-            "1792x1024": "1536x1024",
+            "1536x1024": "1536x1024",
         }
         api_size = size_map.get(req.size, "1024x1024")
 
@@ -73,7 +139,7 @@ class RelayAPIProvider(BaseProvider):
         }
 
         payload = {
-            "prompt": req.prompt,
+            "prompt": prompt,
             "n": req.n,
             "size": api_size,
             "quality": api_quality,
@@ -92,14 +158,10 @@ class RelayAPIProvider(BaseProvider):
                     json=payload
                 )
 
-                if response.status_code == 401:
-                    raise ValueError("Invalid API key")
-                elif response.status_code == 429:
-                    raise ValueError("Rate limit exceeded")
-                elif response.status_code == 403:
-                    raise ValueError("API key forbidden or invalid")
-                elif response.status_code != 200:
-                    raise ValueError(f"API error: {response.status_code} - {response.text}")
+                if response.status_code != 200:
+                    user_message = parse_error_response(response.text, response.status_code)
+                    logger.error(f"[RelayAPI] 生成失败: {user_message}")
+                    raise ValueError(user_message)
 
                 data = response.json()
                 logger.info(f"[RelayAPI] 响应数据: {data}")
@@ -158,7 +220,6 @@ class ImageToImageProvider(BaseProvider):
         except Exception:
             return False
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=30))
     async def generate(self, req: GenerateRequest) -> GenerateResponse:
         """
         Generate images from image using the relay API
@@ -189,7 +250,7 @@ class ImageToImageProvider(BaseProvider):
         size_map = {
             "1024x1024": "1024x1024",
             "1024x1792": "1024x1536",
-            "1792x1024": "1536x1024",
+            "1536x1024": "1536x1024",
         }
         api_size = size_map.get(req.size, "1024x1024")
 

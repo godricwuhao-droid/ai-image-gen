@@ -110,21 +110,20 @@ export const generationService = {
     await api.post(`/galleries/${id}/publish`, { is_public: isPublic });
   },
 
-  toggleLike: async (id: number): Promise<{ success: boolean; likes_count: number }> => {
+  toggleLike: async (id: number): Promise<{ success: boolean; liked: boolean; likes_count: number }> => {
     const response = await api.post(`/generations/${id}/like`);
     return response.data;
   },
 };
 
 export const galleryService = {
-  getList: async (page: number = 1, pageSize: number = 20, style?: string): Promise<{
+  getList: async (page: number = 1, pageSize: number = 20, sort: string = 'latest'): Promise<{
     images: GalleryImage[];
     total: number;
     page: number;
     page_size: number;
   }> => {
-    const params: any = { page, page_size: pageSize };
-    if (style) params.style = style;
+    const params: any = { page, page_size: pageSize, sort };
     const response = await api.get('/galleries', { params });
     return response.data;
   },

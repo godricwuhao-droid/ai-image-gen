@@ -3,9 +3,10 @@ import logging
 import httpx
 from datetime import datetime, date
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.models.generation import Generation
 from app.models.user import User
+from app.models.credit_transaction import CreditTransaction
 from app.services.provider.registry import get_provider
 from app.services.provider.base import GenerateRequest
 from app.tasks.celery_app import celery_app
@@ -137,7 +138,7 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                     
                     images.append(img_data)
 
-                credits_cost = calculate_credits_cost(generation.quality, generation.n)
+                credits_cost = generation.credits_cost or calculate_credits_cost(generation.quality, generation.n)
                 generation.images = images
                 generation.cost_usd = response.cost_usd
                 generation.credits_cost = credits_cost
@@ -166,13 +167,7 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                         user.daily_generation_count = generation.n
                     user.last_generation_date = datetime.utcnow()
                     user.total_generations += generation.n
-                    
-                    if credits_cost > 0:
-                        if user.credits and user.credits >= credits_cost:
-                            user.credits = user.credits - credits_cost
-                            logger.info(f"[Celery] 扣除用户积分: {credits_cost}, 剩余: {user.credits}")
-                        else:
-                            logger.warning(f"[Celery] 用户积分不足: 需要{credits_cost}, 已有{user.credits}")
+                    logger.info(f"[Celery] 用户统计更新: user_id={user_id}, daily_count={user.daily_generation_count}, total={user.total_generations}")
                     
                     await db.commit()
 
@@ -182,18 +177,36 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                 generation.error_message = str(e)
                 await db.commit()
                 
-                if not generation.refunded:
-                    credits_cost = calculate_credits_cost(generation.quality, generation.n)
+                credits_cost = generation.credits_cost or calculate_credits_cost(generation.quality, generation.n)
+                
+                if credits_cost > 0 and not generation.refunded:
+                    result = await db.execute(
+                        update(User)
+                        .where(User.id == user_id)
+                        .values(credits=User.credits + credits_cost)
+                    )
                     
                     user_result = await db.execute(select(User).where(User.id == user_id))
-                    user = user_result.scalar_one_or_none()
+                    user_after = user_result.scalar_one_or_none()
                     
-                    if user:
-                        user.credits = (user.credits or 0) + credits_cost
-                        generation.refunded = True
-                        logger.info(f"[Celery] 自动返还积分: {credits_cost}, 用户剩余积分: {user.credits}")
+                    transaction = CreditTransaction(
+                        user_id=user_id,
+                        amount=credits_cost,
+                        balance_after=user_after.credits if user_after else 0,
+                        transaction_type="generation_refund",
+                        reference_type="generation",
+                        reference_id=generation_id,
+                        description=f"图片生成失败返还积分: {generation.prompt[:30]}..." if len(generation.prompt) > 30 else f"图片生成失败返还积分: {generation.prompt}"
+                    )
+                    db.add(transaction)
                     
+                    generation.refunded = True
                     await db.commit()
+                    logger.info(f"[Celery] 积分已返还: credits_cost={credits_cost}, user_id={user_id}")
+                elif generation.refunded:
+                    logger.info(f"[Celery] 积分已返还过，跳过: generation_id={generation_id}")
+                else:
+                    logger.warning(f"[Celery] 无需返还积分: credits_cost={credits_cost}")
                 
                 try:
                     from app.api.v1.endpoints.events import notify_generation_complete
