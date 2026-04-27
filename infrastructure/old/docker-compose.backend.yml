@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: ai_image_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_KEY=${RELAY_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai/v3}
+      - DATABASE_URL=${DATABASE_URL:-mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen}
+      - DATABASE_ROOT_URL=${DATABASE_ROOT_URL:-mysql+aiomysql://root:root_password@mysql:ai_image_gen}
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_PUBLIC_URL=http://localhost:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=ai-images
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this-in-production}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    name: infrastructure_default

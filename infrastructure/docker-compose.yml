@@ -1,0 +1,160 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai_image_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ai_image_gen
+      MYSQL_USER: ai_image_user
+      MYSQL_PASSWORD: dev_password
+    command: --wait_timeout=28800 --max_connections=500
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai_image_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: ai_image_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: ai_image_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_KEY=${RELAY_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai/v3}
+      - OPENAI_BASE_URL=https://api.openai.com
+      - DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen?charset=utf8mb4
+      - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_PUBLIC_URL=http://localhost:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=ai-images
+      - SECRET_KEY=your-secret-key-change-this-in-production
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  celery-worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: ai_image_celery_worker
+    command: celery -A app.tasks worker -l info
+    environment:
+      - DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen?charset=utf8mb4
+      - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_PUBLIC_URL=http://localhost:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=ai-images
+      - SECRET_KEY=your-secret-key-change-this-in-production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_KEY=${RELAY_API_KEY:-sk-your-api-key-here}
+      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai/v3}
+      - OPENAI_BASE_URL=https://api.openai.com
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: ai_image_frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  admin:
+    image: ai-image-admin:latest
+    build:
+      context: ../admin
+      dockerfile: Dockerfile
+    container_name: ai_image_admin
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  minio_data:
