@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Spin, message } from 'antd';
+import { Card, Row, Col, Statistic, Spin, Empty, Alert } from 'antd';
 import { UserOutlined, PictureOutlined, DollarOutlined, RiseOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { statsService } from '../services/api';
 
@@ -17,9 +17,24 @@ interface DashboardStats {
   growth_rate: number;
 }
 
+const defaultStats: DashboardStats = {
+  total_users: 0,
+  total_generations: 0,
+  total_orders: 0,
+  completed_orders: 0,
+  total_revenue: 0,
+  pending_generations: 0,
+  processing_generations: 0,
+  completed_generations: 0,
+  failed_generations: 0,
+  monthly_new_users: 0,
+  growth_rate: 0,
+};
+
 const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<DashboardStats>(defaultStats);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStats();
@@ -28,11 +43,25 @@ const Dashboard: React.FC = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await statsService.getDashboard();
-      setStats(data);
-    } catch (error) {
-      message.error('获取统计数据失败');
-      console.error('Failed to fetch stats:', error);
+      setStats({
+        total_users: data.total_users || 0,
+        total_generations: data.total_generations || 0,
+        total_orders: data.total_orders || 0,
+        completed_orders: data.completed_orders || 0,
+        total_revenue: data.total_revenue || 0,
+        pending_generations: data.pending_generations || 0,
+        processing_generations: data.processing_generations || 0,
+        completed_generations: data.completed_generations || 0,
+        failed_generations: data.failed_generations || 0,
+        monthly_new_users: data.monthly_new_users || 0,
+        growth_rate: data.growth_rate || 0,
+      });
+    } catch (err: any) {
+      console.error('Failed to fetch stats:', err);
+      setError(err.message || '获取统计数据失败，请确保后端服务正常运行');
+      setStats(defaultStats);
     } finally {
       setLoading(false);
     }
@@ -47,110 +76,127 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>管理后台首页</h1>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
+    <div style={{ padding: '0 24px' }}>
+      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24, color: '#2C2C2C' }}>数据概览</h1>
+      
+      {error && (
+        <Alert
+          message="数据加载失败"
+          description={error}
+          type="warning"
+          showIcon
+          style={{ marginBottom: 24 }}
+        />
+      )}
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="用户总数"
-              value={stats?.total_users || 0}
-              prefix={<UserOutlined />}
+              value={stats.total_users}
+              prefix={<UserOutlined style={{ color: '#8B7355' }} />}
+              valueStyle={{ color: '#2C2C2C' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="生成图片数"
-              value={stats?.total_generations || 0}
-              prefix={<PictureOutlined />}
+              value={stats.total_generations}
+              prefix={<PictureOutlined style={{ color: '#8B7355' }} />}
+              valueStyle={{ color: '#2C2C2C' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="总收入"
-              value={stats?.total_revenue || 0}
-              prefix={<DollarOutlined />}
+              value={stats.total_revenue}
+              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}
               suffix="USD"
               precision={2}
+              valueStyle={{ color: '#2C2C2C' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="本月增长"
-              value={stats?.growth_rate || 0}
-              prefix={<RiseOutlined />}
+              value={stats.growth_rate}
+              prefix={<RiseOutlined style={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }} />}
               suffix="%"
-              valueStyle={{ color: stats?.growth_rate && stats.growth_rate > 0 ? '#3f8600' : '#cf1322' }}
+              valueStyle={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="本月新用户"
-              value={stats?.monthly_new_users || 0}
-              prefix={<UserOutlined />}
+              value={stats.monthly_new_users}
+              prefix={<UserOutlined style={{ color: '#8B7355' }} />}
+              valueStyle={{ color: '#2C2C2C' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="总订单数"
-              value={stats?.total_orders || 0}
-              prefix={<DollarOutlined />}
+              value={stats.total_orders}
+              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}
+              valueStyle={{ color: '#2C2C2C' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="已完成订单"
-              value={stats?.completed_orders || 0}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              value={stats.completed_orders}
+              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}
+              valueStyle={{ color: '#4CAF50' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
             <Statistic
               title="待处理生成"
-              value={(stats?.pending_generations || 0) + (stats?.processing_generations || 0)}
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#faad14' }}
+              value={stats.pending_generations + stats.processing_generations}
+              prefix={<ClockCircleOutlined style={{ color: '#FF9800' }} />}
+              valueStyle={{ color: '#FF9800' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Card title="生成状态分布">
-            <Statistic title="完成" value={stats?.completed_generations || 0} prefix={<CheckCircleOutlined />} valueStyle={{ color: '#3f8600' }} />
-            <Statistic title="处理中" value={stats?.processing_generations || 0} prefix={<ClockCircleOutlined />} valueStyle={{ color: '#1890ff' }} style={{ marginTop: 16 }} />
-            <Statistic title="失败" value={stats?.failed_generations || 0} prefix={<CloseCircleOutlined />} valueStyle={{ color: '#f5222d' }} style={{ marginTop: 16 }} />
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
+            <Statistic
+              title="成功生成"
+              value={stats.completed_generations}
+              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}
+              valueStyle={{ color: '#2C2C2C' }}
+            />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card title="用户活跃度">
-            <Statistic title="日活跃生成" value={(stats?.total_generations || 0) / 30} suffix="张/天" precision={1} />
-            <Statistic title="用户平均生成" value={stats?.total_users ? (stats.total_generations / stats.total_users).toFixed(1) : '0'} suffix="张" style={{ marginTop: 16 }} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title="收入统计">
-            <Statistic title="平均订单金额" value={stats?.completed_orders ? (stats.total_revenue / stats.completed_orders).toFixed(2) : '0'} suffix="USD" prefix="$" />
-            <Statistic title="总收入" value={stats?.total_revenue || 0} prefix="$" suffix="USD" style={{ marginTop: 16 }} />
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable>
+            <Statistic
+              title="失败生成"
+              value={stats.failed_generations}
+              prefix={<CloseCircleOutlined style={{ color: '#F44336' }} />}
+              valueStyle={{ color: '#F44336' }}
+            />
           </Card>
         </Col>
       </Row>

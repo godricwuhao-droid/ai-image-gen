@@ -31,8 +31,23 @@ async def list_orders(
     )
     orders = result.scalars().all()
 
+    order_responses = [
+        OrderResponse(
+            id=order.id,
+            user_id=order.user_id,
+            amount=order.amount,
+            payment_method=order.payment_method,
+            subscription_id=order.subscription_id,
+            payment_status=order.payment_status,
+            transaction_id=order.transaction_id,
+            created_at=order.created_at,
+            updated_at=order.updated_at,
+        )
+        for order in orders
+    ]
+
     return OrderListResponse(
-        orders=list(orders),
+        orders=order_responses,
         total=total,
         page=page,
         page_size=page_size,
@@ -54,7 +69,17 @@ async def get_order(
             detail="Order not found",
         )
 
-    return order
+    return OrderResponse(
+        id=order.id,
+        user_id=order.user_id,
+        amount=order.amount,
+        payment_method=order.payment_method,
+        subscription_id=order.subscription_id,
+        payment_status=order.payment_status,
+        transaction_id=order.transaction_id,
+        created_at=order.created_at,
+        updated_at=order.updated_at,
+    )
 
 
 @router.patch("/{order_id}", response_model=OrderResponse)
@@ -77,11 +102,21 @@ async def update_order(
     order.payment_status = payment_status
     if transaction_id:
         order.transaction_id = transaction_id
-    
+
     await db.commit()
     await db.refresh(order)
 
-    return order
+    return OrderResponse(
+        id=order.id,
+        user_id=order.user_id,
+        amount=order.amount,
+        payment_method=order.payment_method,
+        subscription_id=order.subscription_id,
+        payment_status=order.payment_status,
+        transaction_id=order.transaction_id,
+        created_at=order.created_at,
+        updated_at=order.updated_at,
+    )
 
 
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)

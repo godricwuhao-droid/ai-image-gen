@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Tag, Space, Button, message, Drawer, Descriptions, Statistic, Card, Row, Col, Select, Popconfirm } from 'antd';
 import { EyeOutlined, ReloadOutlined, SearchOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { orderService, Order } from '../services/api';
+import { orderService, Order } from '../../services/api';
 
 const OrderList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -199,7 +199,7 @@ const OrderList: React.FC = () => {
               <Descriptions.Item label="支付方式">{selectedOrder.payment_method || '-'}</Descriptions.Item>
               <Descriptions.Item label="交易ID">{selectedOrder.transaction_id || '-'}</Descriptions.Item>
               <Descriptions.Item label="创建时间">{new Date(selectedOrder.created_at).toLocaleString('zh-CN')}</Descriptions.Item>
-              <Descriptions.Item label="更新时间">{new Date(selectedOrder.updated_at).toLocaleString('zh-CN')}</Descriptions.Item>
+              <Descriptions.Item label="更新时间">{selectedOrder.updated_at ? new Date(selectedOrder.updated_at).toLocaleString('zh-CN') : '-'}</Descriptions.Item>
             </Descriptions>
 
             <h4 style={{ marginTop: 24, marginBottom: 8 }}>操作</h4>

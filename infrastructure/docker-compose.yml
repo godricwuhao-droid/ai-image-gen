@@ -138,10 +138,10 @@ services:
       - app-network
 
   admin:
-    image: ai-image-admin:latest
     build:
       context: ../admin
       dockerfile: Dockerfile
+    image: ai-image-admin:latest
     container_name: ai_image_admin
     ports:
       - "8001:80"

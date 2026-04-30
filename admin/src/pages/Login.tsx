@@ -1,35 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { authService } from '../services/api';
 import './index.less';
 
 const Login: React.FC = () => {
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      window.location.href = '/dashboard';
+    }
+  }, []);
+
   const onFinish = async (values: any) => {
     try {
-      const response = await fetch('/api/admin/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('admin_token', data.access_token);
-        message.success('登录成功');
-        window.location.href = '/dashboard';
-      } else {
-        message.error('用户名或密码错误');
-      }
+      await authService.login(values.username, values.password);
+      message.success('登录成功');
+      window.location.href = '/dashboard';
     } catch (error) {
-      message.error('登录失败，请重试');
+      message.error('登录失败，请检查用户名和密码');
     }
   };
 
   return (
     <div className="login-container">
-      <Card title="AI Image Admin" style={{ width: 400 }}>
+      <Card title="AI管理后台" style={{ width: 400 }}>
         <Form form={form} onFinish={onFinish} layout="vertical">
           <Form.Item
             name="username"

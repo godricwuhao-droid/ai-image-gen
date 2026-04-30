@@ -1,0 +1,2234 @@
+{
+  "cwd": "/data/ai-image/ai-image-gen/admin",
+  "pkg": {
+    "name": "ai-image-admin",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "dev": "umi dev",
+      "build": "umi build",
+      "start": "umi dev",
+      "setup": "umi setup",
+      "postinstall": "umi setup"
+    },
+    "dependencies": {
+      "@ant-design/icons": "^5.2.6",
+      "@ant-design/pro-components": "^2.6.43",
+      "antd": "^5.12.8",
+      "axios": "^1.6.7",
+      "dayjs": "^1.11.10",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "umi": "^4.0.88"
+    },
+    "devDependencies": {
+      "@types/react": "^18.2.48",
+      "@types/react-dom": "^18.2.18",
+      "typescript": "^5.3.3"
+    }
+  },
+  "pkgPath": "/data/ai-image/ai-image-gen/admin/package.json",
+  "plugins": {
+    "./node_modules/@umijs/core/dist/service/servicePlugin": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "preset",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/core/dist/service/servicePlugin.js",
+      "id": "./node_modules/@umijs/core/dist/service/servicePlugin",
+      "key": "servicePlugin",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "@umijs/preset-umi": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "preset",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/index.js",
+      "id": "@umijs/preset-umi",
+      "key": "umi",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 11
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/registerMethods": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/registerMethods.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/registerMethods",
+      "key": "registerMethods",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onStart": [
+            1
+          ]
+        },
+        "register": 7
+      },
+      "enableBy": "register"
+    },
+    "@umijs/did-you-know": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/did-you-know/dist/plugin.js",
+      "id": "@umijs/did-you-know",
+      "key": "umijsDidYouKnow",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onStart": [
+            3
+          ]
+        },
+        "register": 7
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/404/404": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/404/404.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/404/404",
+      "key": "404",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyRoutes": [
+            0
+          ]
+        },
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/aiDev/aiDev": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/aiDev/aiDev.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/aiDev/aiDev",
+      "key": "aiDev",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/appData/appData": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/appData/appData.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/appData/appData",
+      "key": "appData",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyAppData": [
+            19
+          ]
+        },
+        "register": 42
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/appData/umiInfo": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/appData/umiInfo.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/appData/umiInfo",
+      "key": "umiInfo",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/check/check": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/check/check.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/check/check",
+      "key": "check",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onCheckConfig": [
+            0
+          ],
+          "onCheck": [
+            1
+          ]
+        },
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/check/babel722": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/check/babel722.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/check/babel722",
+      "key": "babel722",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onCheck": [
+            0
+          ]
+        },
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/codeSplitting/codeSplitting": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/codeSplitting/codeSplitting.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/codeSplitting/codeSplitting",
+      "key": "codeSplitting",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/configPlugins/configPlugins": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/configPlugins/configPlugins.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/configPlugins/configPlugins",
+      "key": "configPlugins",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyConfig": [
+            1
+          ]
+        },
+        "register": 7
+      },
+      "enableBy": "register"
+    },
+    "virtual: config-title": {
+      "id": "virtual: config-title",
+      "key": "title",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-styles": {
+      "id": "virtual: config-styles",
+      "key": "styles",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-scripts": {
+      "id": "virtual: config-scripts",
+      "key": "scripts",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-routes": {
+      "id": "virtual: config-routes",
+      "key": "routes",
+      "config": {
+        "onChange": "regenerateTmpFiles"
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-routeLoader": {
+      "id": "virtual: config-routeLoader",
+      "key": "routeLoader",
+      "config": {
+        "default": {
+          "moduleType": "esm"
+        }
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-reactRouter5Compat": {
+      "id": "virtual: config-reactRouter5Compat",
+      "key": "reactRouter5Compat",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-presets": {
+      "id": "virtual: config-presets",
+      "key": "presets",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-plugins": {
+      "id": "virtual: config-plugins",
+      "key": "plugins",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-npmClient": {
+      "id": "virtual: config-npmClient",
+      "key": "npmClient",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-mountElementId": {
+      "id": "virtual: config-mountElementId",
+      "key": "mountElementId",
+      "config": {
+        "default": "root"
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-metas": {
+      "id": "virtual: config-metas",
+      "key": "metas",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-links": {
+      "id": "virtual: config-links",
+      "key": "links",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-historyWithQuery": {
+      "id": "virtual: config-historyWithQuery",
+      "key": "historyWithQuery",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-history": {
+      "id": "virtual: config-history",
+      "key": "history",
+      "config": {
+        "default": {
+          "type": "browser"
+        }
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-headScripts": {
+      "id": "virtual: config-headScripts",
+      "key": "headScripts",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-esbuildMinifyIIFE": {
+      "id": "virtual: config-esbuildMinifyIIFE",
+      "key": "esbuildMinifyIIFE",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-conventionRoutes": {
+      "id": "virtual: config-conventionRoutes",
+      "key": "conventionRoutes",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-conventionLayout": {
+      "id": "virtual: config-conventionLayout",
+      "key": "conventionLayout",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-base": {
+      "id": "virtual: config-base",
+      "key": "base",
+      "config": {
+        "default": "/"
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-analyze": {
+      "id": "virtual: config-analyze",
+      "key": "analyze",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-writeToDisk": {
+      "id": "virtual: config-writeToDisk",
+      "key": "writeToDisk",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-transformRuntime": {
+      "id": "virtual: config-transformRuntime",
+      "key": "transformRuntime",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-theme": {
+      "id": "virtual: config-theme",
+      "key": "theme",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-targets": {
+      "id": "virtual: config-targets",
+      "key": "targets",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-svgr": {
+      "id": "virtual: config-svgr",
+      "key": "svgr",
+      "config": {
+        "default": {}
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-svgo": {
+      "id": "virtual: config-svgo",
+      "key": "svgo",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-stylusLoader": {
+      "id": "virtual: config-stylusLoader",
+      "key": "stylusLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-styleLoader": {
+      "id": "virtual: config-styleLoader",
+      "key": "styleLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-srcTranspilerOptions": {
+      "id": "virtual: config-srcTranspilerOptions",
+      "key": "srcTranspilerOptions",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "virtual: config-srcTranspiler": {
+      "id": "virtual: config-srcTranspiler",
+      "key": "srcTranspiler",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-sassLoader": {
+      "id": "virtual: config-sassLoader",
+      "key": "sassLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-runtimePublicPath": {
+      "id": "virtual: config-runtimePublicPath",
+      "key": "runtimePublicPath",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-purgeCSS": {
+      "id": "virtual: config-purgeCSS",
+      "key": "purgeCSS",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-publicPath": {
+      "id": "virtual: config-publicPath",
+      "key": "publicPath",
+      "config": {
+        "default": "/"
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-proxy": {
+      "id": "virtual: config-proxy",
+      "key": "proxy",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-postcssLoader": {
+      "id": "virtual: config-postcssLoader",
+      "key": "postcssLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-outputPath": {
+      "id": "virtual: config-outputPath",
+      "key": "outputPath",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-normalCSSLoaderModules": {
+      "id": "virtual: config-normalCSSLoaderModules",
+      "key": "normalCSSLoaderModules",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-mfsu": {
+      "id": "virtual: config-mfsu",
+      "key": "mfsu",
+      "config": {
+        "default": {
+          "strategy": "eager"
+        }
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-mdx": {
+      "id": "virtual: config-mdx",
+      "key": "mdx",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-manifest": {
+      "id": "virtual: config-manifest",
+      "key": "manifest",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-lessLoader": {
+      "id": "virtual: config-lessLoader",
+      "key": "lessLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-jsMinifierOptions": {
+      "id": "virtual: config-jsMinifierOptions",
+      "key": "jsMinifierOptions",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-jsMinifier": {
+      "id": "virtual: config-jsMinifier",
+      "key": "jsMinifier",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-inlineLimit": {
+      "id": "virtual: config-inlineLimit",
+      "key": "inlineLimit",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-ignoreMomentLocale": {
+      "id": "virtual: config-ignoreMomentLocale",
+      "key": "ignoreMomentLocale",
+      "config": {
+        "default": true
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-https": {
+      "id": "virtual: config-https",
+      "key": "https",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-hash": {
+      "id": "virtual: config-hash",
+      "key": "hash",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-forkTSChecker": {
+      "id": "virtual: config-forkTSChecker",
+      "key": "forkTSChecker",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-fastRefresh": {
+      "id": "virtual: config-fastRefresh",
+      "key": "fastRefresh",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-extraPostCSSPlugins": {
+      "id": "virtual: config-extraPostCSSPlugins",
+      "key": "extraPostCSSPlugins",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-extraBabelPresets": {
+      "id": "virtual: config-extraBabelPresets",
+      "key": "extraBabelPresets",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-extraBabelPlugins": {
+      "id": "virtual: config-extraBabelPlugins",
+      "key": "extraBabelPlugins",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-extraBabelIncludes": {
+      "id": "virtual: config-extraBabelIncludes",
+      "key": "extraBabelIncludes",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-externals": {
+      "id": "virtual: config-externals",
+      "key": "externals",
+      "config": {
+        "default": {}
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-esm": {
+      "id": "virtual: config-esm",
+      "key": "esm",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-devtool": {
+      "id": "virtual: config-devtool",
+      "key": "devtool",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-depTranspiler": {
+      "id": "virtual: config-depTranspiler",
+      "key": "depTranspiler",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-define": {
+      "id": "virtual: config-define",
+      "key": "define",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-deadCode": {
+      "id": "virtual: config-deadCode",
+      "key": "deadCode",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cssPublicPath": {
+      "id": "virtual: config-cssPublicPath",
+      "key": "cssPublicPath",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cssMinifierOptions": {
+      "id": "virtual: config-cssMinifierOptions",
+      "key": "cssMinifierOptions",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cssMinifier": {
+      "id": "virtual: config-cssMinifier",
+      "key": "cssMinifier",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cssLoaderModules": {
+      "id": "virtual: config-cssLoaderModules",
+      "key": "cssLoaderModules",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cssLoader": {
+      "id": "virtual: config-cssLoader",
+      "key": "cssLoader",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-copy": {
+      "id": "virtual: config-copy",
+      "key": "copy",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-checkDepCssModules": {
+      "id": "virtual: config-checkDepCssModules",
+      "key": "checkDepCssModules",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-chainWebpack": {
+      "id": "virtual: config-chainWebpack",
+      "key": "chainWebpack",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-cacheDirectoryPath": {
+      "id": "virtual: config-cacheDirectoryPath",
+      "key": "cacheDirectoryPath",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-babelLoaderCustomize": {
+      "id": "virtual: config-babelLoaderCustomize",
+      "key": "babelLoaderCustomize",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-autoprefixer": {
+      "id": "virtual: config-autoprefixer",
+      "key": "autoprefixer",
+      "config": {},
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-autoCSSModules": {
+      "id": "virtual: config-autoCSSModules",
+      "key": "autoCSSModules",
+      "config": {
+        "default": true
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "virtual: config-alias": {
+      "id": "virtual: config-alias",
+      "key": "alias",
+      "config": {
+        "default": {
+          "umi": "@@/exports",
+          "react": "/data/ai-image/ai-image-gen/admin/node_modules/react",
+          "react-dom": "/data/ai-image/ai-image-gen/admin/node_modules/react-dom",
+          "react-router": "/data/ai-image/ai-image-gen/admin/node_modules/react-router",
+          "react-router-dom": "/data/ai-image/ai-image-gen/admin/node_modules/react-router-dom"
+        }
+      },
+      "type": "plugin",
+      "enableBy": "register",
+      "time": {
+        "hooks": {},
+        "register": 0
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/crossorigin/crossorigin": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/crossorigin/crossorigin.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/crossorigin/crossorigin",
+      "key": "crossorigin",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/depsOnDemand/depsOnDemand": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/depsOnDemand/depsOnDemand.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/depsOnDemand/depsOnDemand",
+      "key": "depsOnDemand",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onStart": [
+            0
+          ]
+        },
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/devTool/devTool": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/devTool/devTool.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/devTool/devTool",
+      "key": "devTool",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/esbuildHelperChecker/esbuildHelperChecker": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/esbuildHelperChecker/esbuildHelperChecker.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/esbuildHelperChecker/esbuildHelperChecker",
+      "key": "esbuildHelperChecker",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 155
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/esmi/esmi": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/esmi/esmi.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/esmi/esmi",
+      "key": "esmi",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 40
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/exportStatic/exportStatic": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/exportStatic/exportStatic.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/exportStatic/exportStatic",
+      "key": "exportStatic",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 22
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/favicons/favicons": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/favicons/favicons.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/favicons/favicons",
+      "key": "favicons",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyAppData": [
+            0
+          ]
+        },
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/helmet/helmet": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/helmet/helmet.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/helmet/helmet",
+      "key": "helmet",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/icons/icons": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/icons/icons.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/icons/icons",
+      "key": "icons",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/mock/mock": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/mock/mock",
+      "key": "mock",
+      "config": {},
+      "time": {
+        "hooks": {
+          "onStart": [
+            2
+          ]
+        },
+        "register": 48
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/mpa/mpa": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/mpa/mpa.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/mpa/mpa",
+      "key": "mpa",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/okam/okam": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/okam/okam",
+      "key": "okam",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/overrides/overrides": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/overrides/overrides.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/overrides/overrides",
+      "key": "overrides",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/phantomDependency/phantomDependency": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/phantomDependency/phantomDependency.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/phantomDependency/phantomDependency",
+      "key": "phantomDependency",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill",
+      "key": "polyfill",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyConfig": [
+            0
+          ]
+        },
+        "register": 2
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/polyfill/publicPathPolyfill": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/polyfill/publicPathPolyfill.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/polyfill/publicPathPolyfill",
+      "key": "publicPathPolyfill",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/prepare/prepare": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/prepare/prepare.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/prepare/prepare",
+      "key": "prepare",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/routePrefetch/routePrefetch": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/routePrefetch/routePrefetch.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/routePrefetch/routePrefetch",
+      "key": "routePrefetch",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/stagewise/stagewise": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/stagewise/stagewise.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/stagewise/stagewise",
+      "key": "stagewise",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/terminal/terminal": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/terminal/terminal.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/terminal/terminal",
+      "key": "terminal",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/tmpFiles/tmpFiles": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/tmpFiles/tmpFiles.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/tmpFiles/tmpFiles",
+      "key": "tmpFiles",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 7
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/clientLoader/clientLoader": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/clientLoader/clientLoader.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/clientLoader/clientLoader",
+      "key": "clientLoader",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 5
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps",
+      "key": "routeProps",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/ssr/ssr": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/ssr/ssr.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/ssr/ssr",
+      "key": "ssr",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 3
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/tmpFiles/configTypes": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/tmpFiles/configTypes.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/tmpFiles/configTypes",
+      "key": "configTypes",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/transform/transform": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/transform/transform.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/transform/transform",
+      "key": "transform",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 3
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/lowImport/lowImport": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/lowImport/lowImport.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/lowImport/lowImport",
+      "key": "lowImport",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 4
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/vite/vite": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/vite/vite.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/vite/vite",
+      "key": "vite",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute",
+      "key": "apiRoute",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 5
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/monorepo/redirect": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/monorepo/redirect.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/monorepo/redirect",
+      "key": "monorepoRedirect",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 31
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/test/test": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/test/test.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/test/test",
+      "key": "test",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent",
+      "key": "clickToComponent",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/legacy/legacy": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/legacy/legacy.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/legacy/legacy",
+      "key": "legacy",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/classPropertiesLoose/classPropertiesLoose": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/classPropertiesLoose/classPropertiesLoose.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/classPropertiesLoose/classPropertiesLoose",
+      "key": "classPropertiesLoose",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/webpack/webpack": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/webpack/webpack",
+      "key": "preset-umi:webpack",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/swc/swc": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/swc/swc.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/swc/swc",
+      "key": "swc",
+      "config": {},
+      "time": {
+        "hooks": {
+          "addOnDemandDeps": [
+            0
+          ]
+        },
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/ui/ui": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/ui/ui",
+      "key": "ui",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 3
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/mako/mako": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/mako/mako.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/mako/mako",
+      "key": "mako",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack",
+      "key": "utoopack",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian",
+      "key": "hmrGuardian",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 3
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad",
+      "key": "routePreloadOnLoad",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 39
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/forget/forget": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/forget/forget.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/forget/forget",
+      "key": "forget",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "config"
+    },
+    "./node_modules/@umijs/preset-umi/dist/features/bundler/bundler": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/features/bundler/bundler.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/features/bundler/bundler",
+      "key": "preset-umi:bundler",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/build": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/build.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/build",
+      "key": "build",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 4
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/config/config": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/config/config.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/config/config",
+      "key": "config",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 59
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/dev/dev": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/dev/dev",
+      "key": "dev",
+      "config": {},
+      "time": {
+        "hooks": {
+          "modifyAppData": [
+            39
+          ]
+        },
+        "register": 53
+      }
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/help": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/help.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/help",
+      "key": "help",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/lint": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/lint.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/lint",
+      "key": "lint",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/setup": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/setup.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/setup",
+      "key": "setup",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/deadcode": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/deadcode.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/deadcode",
+      "key": "deadcode",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/version": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/version.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/version",
+      "key": "version",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/page": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/page.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/page",
+      "key": "generator:page",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/prettier": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/prettier.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/prettier",
+      "key": "generator:prettier",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/tsconfig": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/tsconfig.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/tsconfig",
+      "key": "generator:tsconfig",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/jest": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/jest.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/jest",
+      "key": "generator:jest",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/tailwindcss": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/tailwindcss.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/tailwindcss",
+      "key": "generator:tailwindcss",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/dva": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/dva.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/dva",
+      "key": "generator:dva",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/component": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/component.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/component",
+      "key": "generator:component",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/mock": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/mock.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/mock",
+      "key": "generator:mock",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/cypress": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/cypress.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/cypress",
+      "key": "generator:cypress",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/api": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/api.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/api",
+      "key": "generator:api",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/generators/precommit": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/generators/precommit.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/generators/precommit",
+      "key": "generator:precommit",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/plugin": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/plugin.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/plugin",
+      "key": "command:plugin",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 0
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/verify-commit": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/verify-commit.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/verify-commit",
+      "key": "verifyCommit",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/preview": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/preview.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/preview",
+      "key": "preview",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 50
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/preset-umi/dist/commands/mfsu/mfsu": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/preset-umi/dist/commands/mfsu/mfsu.js",
+      "id": "./node_modules/@umijs/preset-umi/dist/commands/mfsu/mfsu",
+      "key": "mfsu-cli",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    },
+    "@umijs/plugin-run": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/plugin-run/dist/index.js",
+      "id": "@umijs/plugin-run",
+      "key": "run",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 2
+      },
+      "enableBy": "register"
+    },
+    "./node_modules/@umijs/core/dist/service/generatePlugin": {
+      "cwd": "/data/ai-image/ai-image-gen/admin",
+      "type": "plugin",
+      "path": "/data/ai-image/ai-image-gen/admin/node_modules/@umijs/core/dist/service/generatePlugin.js",
+      "id": "./node_modules/@umijs/core/dist/service/generatePlugin",
+      "key": "generatePlugin",
+      "config": {},
+      "time": {
+        "hooks": {},
+        "register": 1
+      },
+      "enableBy": "register"
+    }
+  },
+  "presets": [],
+  "name": "dev",
+  "args": {
+    "_": []
+  },
+  "userConfig": {
+    "routes": [
+      {
+        "path": "/login",
+        "component": "./Login"
+      },
+      {
+        "path": "/",
+        "component": "./AppLayout",
+        "routes": [
+          {
+            "path": "/",
+            "redirect": "/dashboard"
+          },
+          {
+            "path": "/dashboard",
+            "component": "./Dashboard"
+          },
+          {
+            "path": "/users/list",
+            "component": "./Users/List"
+          },
+          {
+            "path": "/orders/list",
+            "component": "./Orders/List"
+          },
+          {
+            "path": "/credits/manage",
+            "component": "./Credits/Manage"
+          },
+          {
+            "path": "/generations/list",
+            "component": "./Generations/List"
+          },
+          {
+            "path": "/templates/list",
+            "component": "./Templates/List"
+          },
+          {
+            "path": "/settings",
+            "component": "./Settings"
+          }
+        ]
+      }
+    ],
+    "npmClient": "npm",
+    "proxy": {
+      "/api": {
+        "target": "http://backend:8000",
+        "changeOrigin": true
+      }
+    }
+  },
+  "mainConfigFile": "/data/ai-image/ai-image-gen/admin/.umirc.ts",
+  "config": {
+    "routeLoader": {
+      "moduleType": "esm"
+    },
+    "mountElementId": "root",
+    "history": {
+      "type": "browser"
+    },
+    "base": "/",
+    "svgr": {},
+    "publicPath": "/",
+    "mfsu": {
+      "strategy": "eager"
+    },
+    "ignoreMomentLocale": true,
+    "externals": {},
+    "autoCSSModules": true,
+    "alias": {
+      "umi": "@@/exports",
+      "react": "/data/ai-image/ai-image-gen/admin/node_modules/react",
+      "react-dom": "/data/ai-image/ai-image-gen/admin/node_modules/react-dom",
+      "react-router": "/data/ai-image/ai-image-gen/admin/node_modules/react-router",
+      "react-router-dom": "/data/ai-image/ai-image-gen/admin/node_modules/react-router-dom",
+      "@": "/data/ai-image/ai-image-gen/admin/src",
+      "@@": "/data/ai-image/ai-image-gen/admin/src/.umi",
+      "regenerator-runtime": "/data/ai-image/ai-image-gen/admin/node_modules/regenerator-runtime"
+    },
+    "routes": [
+      {
+        "path": "/login",
+        "component": "./Login"
+      },
+      {
+        "path": "/",
+        "component": "./AppLayout",
+        "routes": [
+          {
+            "path": "/",
+            "redirect": "/dashboard"
+          },
+          {
+            "path": "/dashboard",
+            "component": "./Dashboard"
+          },
+          {
+            "path": "/users/list",
+            "component": "./Users/List"
+          },
+          {
+            "path": "/orders/list",
+            "component": "./Orders/List"
+          },
+          {
+            "path": "/credits/manage",
+            "component": "./Credits/Manage"
+          },
+          {
+            "path": "/generations/list",
+            "component": "./Generations/List"
+          },
+          {
+            "path": "/templates/list",
+            "component": "./Templates/List"
+          },
+          {
+            "path": "/settings",
+            "component": "./Settings"
+          }
+        ]
+      }
+    ],
+    "npmClient": "npm",
+    "proxy": {
+      "/api": {
+        "target": "http://backend:8000",
+        "changeOrigin": true
+      }
+    },
+    "targets": {
+      "chrome": 80
+    }
+  },
+  "routes": {
+    "1": {
+      "path": "/login",
+      "file": "@/pages/Login.tsx",
+      "id": "1",
+      "absPath": "/login",
+      "__content": "import React, { useEffect } from 'react';\nimport { Form, Input, Button, Card, message } from 'antd';\nimport { UserOutlined, LockOutlined } from '@ant-design/icons';\nimport { authService } from '../services/api';\nimport './index.less';\n\nconst Login: React.FC = () => {\n  const [form] = Form.useForm();\n\n  useEffect(() => {\n    const token = localStorage.getItem('admin_token');\n    if (token) {\n      window.location.href = '/dashboard';\n    }\n  }, []);\n\n  const onFinish = async (values: any) => {\n    try {\n      await authService.login(values.username, values.password);\n      message.success('登录成功');\n      window.location.href = '/dashboard';\n    } catch (error) {\n      message.error('登录失败，请检查用户名和密码');\n    }\n  };\n\n  return (\n    <div className=\"login-container\">\n      <Card title=\"AI管理后台\" style={{ width: 400 }}>\n        <Form form={form} onFinish={onFinish} layout=\"vertical\">\n          <Form.Item\n            name=\"username\"\n            rules={[{ required: true, message: '请输入用户名' }]}\n          >\n            <Input prefix={<UserOutlined />} placeholder=\"用户名\" />\n          </Form.Item>\n          <Form.Item\n            name=\"password\"\n            rules={[{ required: true, message: '请输入密码' }]}\n          >\n            <Input.Password prefix={<LockOutlined />} placeholder=\"密码\" />\n          </Form.Item>\n          <Form.Item>\n            <Button type=\"primary\" htmlType=\"submit\" block>\n              登录\n            </Button>\n          </Form.Item>\n        </Form>\n      </Card>\n    </div>\n  );\n};\n\nexport default Login;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Login.tsx"
+    },
+    "2": {
+      "path": "/",
+      "file": "@/pages/AppLayout.tsx",
+      "id": "2",
+      "absPath": "/",
+      "__content": "import { Layout, Menu, Avatar, theme } from 'antd';\nimport { useNavigate, useLocation } from 'umi';\nimport { \n  DashboardOutlined, \n  UserOutlined, \n  ShoppingCartOutlined, \n  DollarOutlined, \n  PictureOutlined,\n  FileTextOutlined,\n  SettingOutlined,\n  LogoutOutlined\n} from '@ant-design/icons';\nimport React, { useState, useEffect } from 'react';\n\nconst { Sider, Content, Header } = Layout;\n\nconst AppLayout: React.FC = (props: any) => {\n  const navigate = useNavigate();\n  const location = useLocation();\n  const [collapsed, setCollapsed] = useState(false);\n  const [loading, setLoading] = useState(true);\n  const { token } = theme.useToken();\n\n  useEffect(() => {\n    const token = localStorage.getItem('admin_token');\n    if (!token) {\n      navigate('/login');\n      return;\n    }\n    setLoading(false);\n  }, []);\n\n  const handleLogout = () => {\n    localStorage.removeItem('admin_token');\n    localStorage.removeItem('admin_user');\n    navigate('/login');\n  };\n\n  if (loading) {\n    return (\n      <div style={{ \n        display: 'flex', \n        justifyContent: 'center', \n        alignItems: 'center', \n        height: '100vh',\n        background: '#FAFAF8'\n      }}>\n        <div style={{ color: '#8B7355', fontSize: 16 }}>加载中...</div>\n      </div>\n    );\n  }\n\n  const menuItems = [\n    { key: '/dashboard', icon: <DashboardOutlined />, label: '仪表盘' },\n    { key: '/users/list', icon: <UserOutlined />, label: '用户管理' },\n    { key: '/orders/list', icon: <ShoppingCartOutlined />, label: '订单管理' },\n    { key: '/credits/manage', icon: <DollarOutlined />, label: '积分管理' },\n    { key: '/generations/list', icon: <PictureOutlined />, label: '生成记录' },\n    { key: '/templates/list', icon: <FileTextOutlined />, label: '模板管理' },\n    { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },\n  ];\n\n  return (\n    <Layout style={{ minHeight: '100vh', background: '#FAFAF8' }}>\n      <Sider \n        collapsible \n        collapsed={collapsed}\n        onCollapse={setCollapsed}\n        theme=\"light\"\n        width={220}\n        style={{ \n          background: '#FFFFFF',\n          borderRight: '1px solid #E8E6E1',\n          boxShadow: '2px 0 8px rgba(0,0,0,0.04)'\n        }}\n      >\n        <div style={{ \n          height: 64, \n          display: 'flex', \n          alignItems: 'center', \n          justifyContent: 'center', \n          color: '#8B7355', \n          fontSize: 18, \n          fontWeight: 600,\n          borderBottom: '1px solid #E8E6E1',\n          background: '#FAFAF8'\n        }}>\n          {collapsed ? 'AI' : '✨ AI管理后台'}\n        </div>\n        <Menu\n          theme=\"light\"\n          mode=\"inline\"\n          selectedKeys={[location.pathname]}\n          onClick={({ key }) => navigate(key)}\n          items={menuItems}\n          style={{ \n            background: '#FFFFFF',\n            borderRight: 'none',\n            fontSize: 14\n          }}\n          selectedColor=\"#8B7355\"\n        />\n      </Sider>\n      <Layout style={{ background: '#FAFAF8' }}>\n        <Header style={{ \n          padding: '0 24px', \n          background: '#FFFFFF', \n          display: 'flex', \n          justifyContent: 'flex-end', \n          alignItems: 'center',\n          borderBottom: '1px solid #E8E6E1',\n          height: 64\n        }}>\n          <div \n            style={{ \n              display: 'flex', \n              alignItems: 'center', \n              gap: 12,\n              cursor: 'pointer',\n              color: '#6B6B6B',\n              padding: '8px 16px',\n              borderRadius: 8,\n              transition: 'all 0.2s'\n            }}\n            onClick={handleLogout}\n            onMouseEnter={(e) => {\n              e.currentTarget.style.background = '#F5F5F5';\n              e.currentTarget.style.color = '#8B7355';\n            }}\n            onMouseLeave={(e) => {\n              e.currentTarget.style.background = 'transparent';\n              e.currentTarget.style.color = '#6B6B6B';\n            }}\n          >\n            <LogoutOutlined />\n            <span>退出登录</span>\n          </div>\n        </Header>\n        <Content style={{ \n          margin: 24, \n          padding: 24, \n          background: '#FFFFFF', \n          minHeight: 280, \n          borderRadius: 12,\n          boxShadow: '0 2px 8px rgba(0,0,0,0.04)'\n        }}>\n          {props.children}\n        </Content>\n      </Layout>\n    </Layout>\n  );\n};\n\nexport default AppLayout;\n",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/AppLayout.tsx"
+    },
+    "3": {
+      "path": "/",
+      "redirect": "/dashboard",
+      "parentId": "2",
+      "id": "3",
+      "absPath": "/"
+    },
+    "4": {
+      "path": "/dashboard",
+      "file": "@/pages/Dashboard.tsx",
+      "parentId": "2",
+      "id": "4",
+      "absPath": "/dashboard",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Card, Row, Col, Statistic, Spin, Empty, Alert } from 'antd';\nimport { UserOutlined, PictureOutlined, DollarOutlined, RiseOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';\nimport { statsService } from '../services/api';\n\ninterface DashboardStats {\n  total_users: number;\n  total_generations: number;\n  total_orders: number;\n  completed_orders: number;\n  total_revenue: number;\n  pending_generations: number;\n  processing_generations: number;\n  completed_generations: number;\n  failed_generations: number;\n  monthly_new_users: number;\n  growth_rate: number;\n}\n\nconst defaultStats: DashboardStats = {\n  total_users: 0,\n  total_generations: 0,\n  total_orders: 0,\n  completed_orders: 0,\n  total_revenue: 0,\n  pending_generations: 0,\n  processing_generations: 0,\n  completed_generations: 0,\n  failed_generations: 0,\n  monthly_new_users: 0,\n  growth_rate: 0,\n};\n\nconst Dashboard: React.FC = () => {\n  const [loading, setLoading] = useState(true);\n  const [stats, setStats] = useState<DashboardStats>(defaultStats);\n  const [error, setError] = useState<string | null>(null);\n\n  useEffect(() => {\n    fetchStats();\n  }, []);\n\n  const fetchStats = async () => {\n    try {\n      setLoading(true);\n      setError(null);\n      const data = await statsService.getDashboard();\n      setStats({\n        total_users: data.total_users || 0,\n        total_generations: data.total_generations || 0,\n        total_orders: data.total_orders || 0,\n        completed_orders: data.completed_orders || 0,\n        total_revenue: data.total_revenue || 0,\n        pending_generations: data.pending_generations || 0,\n        processing_generations: data.processing_generations || 0,\n        completed_generations: data.completed_generations || 0,\n        failed_generations: data.failed_generations || 0,\n        monthly_new_users: data.monthly_new_users || 0,\n        growth_rate: data.growth_rate || 0,\n      });\n    } catch (err: any) {\n      console.error('Failed to fetch stats:', err);\n      setError(err.message || '获取统计数据失败，请确保后端服务正常运行');\n      setStats(defaultStats);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  if (loading) {\n    return (\n      <div style={{ textAlign: 'center', padding: '50px' }}>\n        <Spin size=\"large\" />\n      </div>\n    );\n  }\n\n  return (\n    <div style={{ padding: '0 24px' }}>\n      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24, color: '#2C2C2C' }}>数据概览</h1>\n      \n      {error && (\n        <Alert\n          message=\"数据加载失败\"\n          description={error}\n          type=\"warning\"\n          showIcon\n          style={{ marginBottom: 24 }}\n        />\n      )}\n\n      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"用户总数\"\n              value={stats.total_users}\n              prefix={<UserOutlined style={{ color: '#8B7355' }} />}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"生成图片数\"\n              value={stats.total_generations}\n              prefix={<PictureOutlined style={{ color: '#8B7355' }} />}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"总收入\"\n              value={stats.total_revenue}\n              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}\n              suffix=\"USD\"\n              precision={2}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"本月增长\"\n              value={stats.growth_rate}\n              prefix={<RiseOutlined style={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }} />}\n              suffix=\"%\"\n              valueStyle={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }}\n            />\n          </Card>\n        </Col>\n      </Row>\n\n      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"本月新用户\"\n              value={stats.monthly_new_users}\n              prefix={<UserOutlined style={{ color: '#8B7355' }} />}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"总订单数\"\n              value={stats.total_orders}\n              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"已完成订单\"\n              value={stats.completed_orders}\n              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}\n              valueStyle={{ color: '#4CAF50' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"待处理生成\"\n              value={stats.pending_generations + stats.processing_generations}\n              prefix={<ClockCircleOutlined style={{ color: '#FF9800' }} />}\n              valueStyle={{ color: '#FF9800' }}\n            />\n          </Card>\n        </Col>\n      </Row>\n\n      <Row gutter={[16, 16]}>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"成功生成\"\n              value={stats.completed_generations}\n              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}\n              valueStyle={{ color: '#2C2C2C' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} lg={6}>\n          <Card hoverable>\n            <Statistic\n              title=\"失败生成\"\n              value={stats.failed_generations}\n              prefix={<CloseCircleOutlined style={{ color: '#F44336' }} />}\n              valueStyle={{ color: '#F44336' }}\n            />\n          </Card>\n        </Col>\n      </Row>\n    </div>\n  );\n};\n\nexport default Dashboard;\n",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Dashboard.tsx"
+    },
+    "5": {
+      "path": "/users/list",
+      "file": "@/pages/Users/List.tsx",
+      "parentId": "2",
+      "id": "5",
+      "absPath": "/users/list",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Table, Button, Space, Tag, Modal, message, Popconfirm, Input, Card, Row, Col, Statistic, InputNumber } from 'antd';\nimport { PlusOutlined, EyeOutlined, StopOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, DollarOutlined } from '@ant-design/icons';\nimport { userService, creditService, User } from '../../services/api';\n\nconst UserList: React.FC = () => {\n  const [users, setUsers] = useState<User[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [pagination, setPagination] = useState({\n    current: 1,\n    pageSize: 20,\n    total: 0,\n  });\n  const [detailModalVisible, setDetailModalVisible] = useState(false);\n  const [selectedUser, setSelectedUser] = useState<User | null>(null);\n  const [rechargeModalVisible, setRechargeModalVisible] = useState(false);\n  const [rechargeAmount, setRechargeAmount] = useState<number>(0);\n  const [rechargeDescription, setRechargeDescription] = useState('');\n  const [rechargeLoading, setRechargeLoading] = useState(false);\n\n  useEffect(() => {\n    fetchUsers();\n  }, [pagination.current, pagination.pageSize]);\n\n  const fetchUsers = async () => {\n    try {\n      setLoading(true);\n      const data = await userService.getList(pagination.current, pagination.pageSize);\n      setUsers(data.users);\n      setPagination(prev => ({ ...prev, total: data.total }));\n    } catch (error) {\n      message.error('获取用户列表失败');\n      console.error('Failed to fetch users:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleStatusChange = async (userId: number, isActive: boolean) => {\n    try {\n      await userService.updateStatus(userId, isActive);\n      message.success(isActive ? '用户已启用' : '用户已禁用');\n      fetchUsers();\n    } catch (error) {\n      message.error('更新用户状态失败');\n    }\n  };\n\n  const handleDelete = async (userId: number) => {\n    try {\n      await userService.delete(userId);\n      message.success('用户已删除');\n      fetchUsers();\n    } catch (error) {\n      message.error('删除用户失败');\n    }\n  };\n\n  const handleViewDetail = async (user: User) => {\n    try {\n      const fullUser = await userService.getById(user.id);\n      setSelectedUser(fullUser);\n      setDetailModalVisible(true);\n    } catch (error) {\n      message.error('获取用户详情失败');\n    }\n  };\n\n  const handleRecharge = (user: User) => {\n    setSelectedUser(user);\n    setRechargeAmount(0);\n    setRechargeDescription('');\n    setRechargeModalVisible(true);\n  };\n\n  const submitRecharge = async () => {\n    if (!selectedUser || rechargeAmount <= 0) {\n      message.error('请输入正确的积分数量');\n      return;\n    }\n\n    try {\n      setRechargeLoading(true);\n      const result = await creditService.recharge(selectedUser.id, rechargeAmount, rechargeDescription);\n      message.success(`已成功为用户 ${selectedUser.username} 充值 ${rechargeAmount} 积分`);\n      setRechargeModalVisible(false);\n      fetchUsers();\n    } catch (error: any) {\n      message.error(error.response?.data?.detail || '操作失败');\n    } finally {\n      setRechargeLoading(false);\n    }\n  };\n\n  const columns = [\n    {\n      title: 'ID',\n      dataIndex: 'id',\n      key: 'id',\n      width: 80,\n    },\n    {\n      title: '用户名',\n      dataIndex: 'username',\n      key: 'username',\n      width: 150,\n    },\n    {\n      title: '邮箱',\n      dataIndex: 'email',\n      key: 'email',\n      width: 200,\n    },\n    {\n      title: '积分',\n      dataIndex: 'credits',\n      key: 'credits',\n      width: 100,\n      render: (credits: number) => (\n        <Tag color=\"blue\">{credits}</Tag>\n      ),\n    },\n    {\n      title: '状态',\n      dataIndex: 'is_active',\n      key: 'is_active',\n      width: 100,\n      render: (isActive: boolean) => (\n        <Tag color={isActive ? 'green' : 'red'}>\n          {isActive ? '正常' : '禁用'}\n        </Tag>\n      ),\n    },\n    {\n      title: '今日生成',\n      dataIndex: 'daily_generation_count',\n      key: 'daily_generation_count',\n      width: 100,\n    },\n    {\n      title: '总生成数',\n      dataIndex: 'total_generations',\n      key: 'total_generations',\n      width: 100,\n    },\n    {\n      title: '注册时间',\n      dataIndex: 'created_at',\n      key: 'created_at',\n      width: 180,\n      render: (createdAt: string) => new Date(createdAt).toLocaleString('zh-CN'),\n    },\n    {\n      title: '操作',\n      key: 'action',\n      width: 280,\n      render: (_: any, record: User) => (\n        <Space size=\"small\">\n          <Button \n            type=\"link\" \n            size=\"small\"\n            icon={<EyeOutlined />}\n            onClick={() => handleViewDetail(record)}\n          >\n            详情\n          </Button>\n          <Button \n            type=\"link\" \n            size=\"small\"\n            icon={<DollarOutlined />}\n            onClick={() => handleRecharge(record)}\n          >\n            充值\n          </Button>\n          <Button \n            type=\"link\" \n            size=\"small\"\n            danger={record.is_active}\n            onClick={() => handleStatusChange(record.id, !record.is_active)}\n          >\n            {record.is_active ? '禁用' : '启用'}\n          </Button>\n          <Popconfirm\n            title=\"确定要删除这个用户吗？\"\n            onConfirm={() => handleDelete(record.id)}\n            okText=\"确定\"\n            cancelText=\"取消\"\n          >\n            <Button type=\"link\" size=\"small\" danger icon={<DeleteOutlined />}>\n              删除\n            </Button>\n          </Popconfirm>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <h2>用户管理</h2>\n      <Space style={{ marginBottom: 16 }}>\n        <Button icon={<ReloadOutlined />} onClick={fetchUsers}>\n          刷新\n        </Button>\n      </Space>\n\n      <Table\n        columns={columns}\n        dataSource={users}\n        rowKey=\"id\"\n        loading={loading}\n        pagination={{\n          current: pagination.current,\n          pageSize: pagination.pageSize,\n          total: pagination.total,\n          showSizeChanger: true,\n          showQuickJumper: true,\n          showTotal: (total) => `共 ${total} 条`,\n          onChange: (page, pageSize) => {\n            setPagination(prev => ({ ...prev, current: page, pageSize }));\n          },\n        }}\n      />\n\n      <Modal\n        title=\"用户详情\"\n        open={detailModalVisible}\n        onCancel={() => setDetailModalVisible(false)}\n        footer={[\n          <Button key=\"close\" onClick={() => setDetailModalVisible(false)}>\n            关闭\n          </Button>,\n          <Button key=\"recharge\" type=\"primary\" onClick={() => {\n            setDetailModalVisible(false);\n            handleRecharge(selectedUser!);\n          }}>\n            充值积分\n          </Button>,\n        ]}\n        width={600}\n      >\n        {selectedUser && (\n          <div>\n            <Row gutter={16} style={{ marginBottom: 16 }}>\n              <Col span={12}>\n                <Card size=\"small\">\n                  <Statistic \n                    title=\"用户ID\" \n                    value={selectedUser.id} \n                  />\n                </Card>\n              </Col>\n              <Col span={12}>\n                <Card size=\"small\">\n                  <Statistic \n                    title=\"当前积分\" \n                    value={selectedUser.credits} \n                    prefix={<DollarOutlined />}\n                  />\n                </Card>\n              </Col>\n            </Row>\n            <p><strong>用户名：</strong>{selectedUser.username}</p>\n            <p><strong>邮箱：</strong>{selectedUser.email}</p>\n            <p><strong>状态：</strong>\n              <Tag color={selectedUser.is_active ? 'green' : 'red'}>\n                {selectedUser.is_active ? '正常' : '禁用'}\n              </Tag>\n            </p>\n            <p><strong>超级管理员：</strong>\n              <Tag color={selectedUser.is_superuser ? 'gold' : 'default'}>\n                {selectedUser.is_superuser ? '是' : '否'}\n              </Tag>\n            </p>\n            <p><strong>今日生成数：</strong>{selectedUser.daily_generation_count}</p>\n            <p><strong>总生成数：</strong>{selectedUser.total_generations}</p>\n            <p><strong>注册时间：</strong>{new Date(selectedUser.created_at).toLocaleString('zh-CN')}</p>\n          </div>\n        )}\n      </Modal>\n\n      <Modal\n        title={`为用户 ${selectedUser?.username} 充值积分`}\n        open={rechargeModalVisible}\n        onCancel={() => setRechargeModalVisible(false)}\n        footer={[\n          <Button key=\"cancel\" onClick={() => setRechargeModalVisible(false)}>\n            取消\n          </Button>,\n          <Button key=\"submit\" type=\"primary\" loading={rechargeLoading} onClick={submitRecharge}>\n            确认充值\n          </Button>,\n        ]}\n      >\n        <div style={{ marginBottom: 16 }}>\n          <p><strong>用户：</strong>{selectedUser?.username} ({selectedUser?.email})</p>\n          <p><strong>当前积分：</strong>{selectedUser?.credits}</p>\n        </div>\n        <div style={{ marginBottom: 16 }}>\n          <label style={{ display: 'block', marginBottom: 8 }}>充值积分数量：</label>\n          <InputNumber\n            style={{ width: '100%' }}\n            value={rechargeAmount}\n            onChange={(value) => setRechargeAmount(value || 0)}\n            min={1}\n            placeholder=\"请输入积分数量\"\n          />\n        </div>\n        <div>\n          <label style={{ display: 'block', marginBottom: 8 }}>说明（可选）：</label>\n          <Input.TextArea\n            value={rechargeDescription}\n            onChange={(e) => setRechargeDescription(e.target.value)}\n            placeholder=\"请输入充值原因\"\n            rows={3}\n          />\n        </div>\n        {selectedUser && rechargeAmount > 0 && (\n          <div style={{ marginTop: 16, padding: 12, background: '#f0f5ff', borderRadius: 4 }}>\n            <p style={{ color: '#1890ff' }}>\n              <strong>充值后积分：</strong>{selectedUser.credits + rechargeAmount}\n            </p>\n          </div>\n        )}\n      </Modal>\n    </div>\n  );\n};\n\nexport default UserList;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Users/List.tsx"
+    },
+    "6": {
+      "path": "/orders/list",
+      "file": "@/pages/Orders/List.tsx",
+      "parentId": "2",
+      "id": "6",
+      "absPath": "/orders/list",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Table, Tag, Space, Button, message, Drawer, Descriptions, Statistic, Card, Row, Col, Select, Popconfirm } from 'antd';\nimport { EyeOutlined, ReloadOutlined, SearchOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';\nimport { orderService, Order } from '../../services/api';\n\nconst OrderList: React.FC = () => {\n  const [orders, setOrders] = useState<Order[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);\n  const [drawerVisible, setDrawerVisible] = useState(false);\n  const [pagination, setPagination] = useState({\n    current: 1,\n    pageSize: 20,\n    total: 0,\n  });\n\n  useEffect(() => {\n    fetchOrders();\n  }, [pagination.current, pagination.pageSize]);\n\n  const fetchOrders = async () => {\n    try {\n      setLoading(true);\n      const data = await orderService.getList(pagination.current, pagination.pageSize);\n      setOrders(data.orders);\n      setPagination(prev => ({ ...prev, total: data.total }));\n    } catch (error) {\n      message.error('获取订单列表失败');\n      console.error('Failed to fetch orders:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleView = (order: Order) => {\n    setSelectedOrder(order);\n    setDrawerVisible(true);\n  };\n\n  const handleStatusChange = async (orderId: number, status: string) => {\n    try {\n      await orderService.updateStatus(orderId, status);\n      message.success('订单状态已更新');\n      fetchOrders();\n      setDrawerVisible(false);\n    } catch (error) {\n      message.error('更新订单状态失败');\n    }\n  };\n\n  const statusColorMap: Record<string, string> = {\n    pending: 'orange',\n    processing: 'blue',\n    completed: 'green',\n    failed: 'red',\n    refunded: 'purple',\n  };\n\n  const statusTextMap: Record<string, string> = {\n    pending: '待支付',\n    processing: '处理中',\n    completed: '已完成',\n    failed: '失败',\n    refunded: '已退款',\n  };\n\n  const columns = [\n    {\n      title: '订单ID',\n      dataIndex: 'id',\n      key: 'id',\n      width: 100,\n    },\n    {\n      title: '用户ID',\n      dataIndex: 'user_id',\n      key: 'user_id',\n      width: 100,\n    },\n    {\n      title: '金额',\n      dataIndex: 'amount',\n      key: 'amount',\n      width: 120,\n      render: (amount: number) => `$${amount?.toFixed(2) || '0.00'}`,\n    },\n    {\n      title: '支付方式',\n      dataIndex: 'payment_method',\n      key: 'payment_method',\n      width: 120,\n    },\n    {\n      title: '状态',\n      dataIndex: 'payment_status',\n      key: 'payment_status',\n      width: 100,\n      render: (status: string) => (\n        <Tag color={statusColorMap[status]}>\n          {statusTextMap[status]}\n        </Tag>\n      ),\n    },\n    {\n      title: '交易ID',\n      dataIndex: 'transaction_id',\n      key: 'transaction_id',\n      ellipsis: true,\n      width: 180,\n    },\n    {\n      title: '创建时间',\n      dataIndex: 'created_at',\n      key: 'created_at',\n      width: 180,\n      render: (createdAt: string) => new Date(createdAt).toLocaleString('zh-CN'),\n    },\n    {\n      title: '操作',\n      key: 'action',\n      width: 100,\n      render: (_: any, record: Order) => (\n        <Space>\n          <Button \n            type=\"link\" \n            icon={<EyeOutlined />}\n            onClick={() => handleView(record)}\n          >\n            查看\n          </Button>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <h2>订单管理</h2>\n      <Space style={{ marginBottom: 16 }}>\n        <Button icon={<ReloadOutlined />} onClick={fetchOrders}>\n          刷新\n        </Button>\n        <Button icon={<SearchOutlined />}>\n          搜索订单\n        </Button>\n      </Space>\n      <Table\n        columns={columns}\n        dataSource={orders}\n        rowKey=\"id\"\n        loading={loading}\n        pagination={{\n          current: pagination.current,\n          pageSize: pagination.pageSize,\n          total: pagination.total,\n          showSizeChanger: true,\n          showQuickJumper: true,\n          showTotal: (total) => `共 ${total} 条`,\n          onChange: (page, pageSize) => {\n            setPagination(prev => ({ ...prev, current: page, pageSize }));\n          },\n        }}\n      />\n\n      <Drawer\n        title=\"订单详情\"\n        placement=\"right\"\n        width={600}\n        onClose={() => setDrawerVisible(false)}\n        open={drawerVisible}\n      >\n        {selectedOrder && (\n          <>\n            <Row gutter={16} style={{ marginBottom: 24 }}>\n              <Col span={12}>\n                <Card size=\"small\">\n                  <Statistic \n                    title=\"订单金额\" \n                    value={selectedOrder.amount} \n                    prefix=\"$\" \n                    precision={2}\n                  />\n                </Card>\n              </Col>\n              <Col span={12}>\n                <Card size=\"small\">\n                  <Statistic \n                    title=\"订单状态\" \n                    value={statusTextMap[selectedOrder.payment_status]}\n                    valueStyle={{ color: statusColorMap[selectedOrder.payment_status] }}\n                  />\n                </Card>\n              </Col>\n            </Row>\n\n            <Descriptions column={2} bordered size=\"small\">\n              <Descriptions.Item label=\"订单ID\">{selectedOrder.id}</Descriptions.Item>\n              <Descriptions.Item label=\"用户ID\">{selectedOrder.user_id}</Descriptions.Item>\n              <Descriptions.Item label=\"支付方式\">{selectedOrder.payment_method || '-'}</Descriptions.Item>\n              <Descriptions.Item label=\"交易ID\">{selectedOrder.transaction_id || '-'}</Descriptions.Item>\n              <Descriptions.Item label=\"创建时间\">{new Date(selectedOrder.created_at).toLocaleString('zh-CN')}</Descriptions.Item>\n              <Descriptions.Item label=\"更新时间\">{new Date(selectedOrder.updated_at).toLocaleString('zh-CN')}</Descriptions.Item>\n            </Descriptions>\n\n            <h4 style={{ marginTop: 24, marginBottom: 8 }}>操作</h4>\n            <Space>\n              {selectedOrder.payment_status === 'pending' && (\n                <Button \n                  type=\"primary\" \n                  icon={<CheckCircleOutlined />}\n                  onClick={() => handleStatusChange(selectedOrder.id, 'completed')}\n                >\n                  标记为已完成\n                </Button>\n              )}\n              {selectedOrder.payment_status === 'completed' && (\n                <Popconfirm\n                  title=\"确定要退款吗？\"\n                  onConfirm={() => handleStatusChange(selectedOrder.id, 'refunded')}\n                  okText=\"确定\"\n                  cancelText=\"取消\"\n                >\n                  <Button danger icon={<CloseCircleOutlined />}>\n                    退款\n                  </Button>\n                </Popconfirm>\n              )}\n              <Button \n                icon={<CloseCircleOutlined />}\n                onClick={() => handleStatusChange(selectedOrder.id, 'failed')}\n              >\n                标记为失败\n              </Button>\n            </Space>\n          </>\n        )}\n      </Drawer>\n    </div>\n  );\n};\n\nexport default OrderList;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Orders/List.tsx"
+    },
+    "7": {
+      "path": "/credits/manage",
+      "file": "@/pages/Credits/Manage.tsx",
+      "parentId": "2",
+      "id": "7",
+      "absPath": "/credits/manage",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Card, Row, Col, Statistic, Table, Tag, Spin, message, Button, Space, Modal, InputNumber, Input, Select, Popconfirm } from 'antd';\nimport { CreditOutlined, ReloadOutlined, SearchOutlined, PlusOutlined, MinusOutlined, HistoryOutlined } from '@ant-design/icons';\nimport { creditService, UserCredit, CreditTransaction } from '../../services/api';\n\nconst { Option } = Select;\n\nconst CreditsManage: React.FC = () => {\n  const [userCredits, setUserCredits] = useState<UserCredit[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [pagination, setPagination] = useState({\n    current: 1,\n    pageSize: 20,\n    total: 0,\n  });\n  const [stats, setStats] = useState({\n    totalCredits: 0,\n    totalUsers: 0,\n    totalTransactions: 0,\n  });\n  const [rechargeModalVisible, setRechargeModalVisible] = useState(false);\n  const [selectedUser, setSelectedUser] = useState<UserCredit | null>(null);\n  const [rechargeAmount, setRechargeAmount] = useState<number>(0);\n  const [rechargeDescription, setRechargeDescription] = useState('');\n  const [rechargeLoading, setRechargeLoading] = useState(false);\n  const [transactionModalVisible, setTransactionModalVisible] = useState(false);\n  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);\n  const [transactionLoading, setTransactionLoading] = useState(false);\n\n  useEffect(() => {\n    fetchUserCredits();\n    fetchStats();\n  }, [pagination.current, pagination.pageSize]);\n\n  const fetchUserCredits = async () => {\n    try {\n      setLoading(true);\n      const data = await creditService.getUserCredits(pagination.current, pagination.pageSize);\n      setUserCredits(data.users);\n      setPagination(prev => ({ ...prev, total: data.total }));\n    } catch (error) {\n      message.error('获取用户积分失败');\n      console.error('Failed to fetch user credits:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const fetchStats = async () => {\n    try {\n      const data = await creditService.getUserCredits(1, 1000);\n      setStats({\n        totalCredits: data.users.reduce((sum, u) => sum + u.credits, 0),\n        totalUsers: data.total,\n        totalTransactions: 0,\n      });\n    } catch (error) {\n      console.error('Failed to fetch stats:', error);\n    }\n  };\n\n  const handleRecharge = async (user: UserCredit, isDeduct = false) => {\n    setSelectedUser(user);\n    setRechargeAmount(0);\n    setRechargeDescription('');\n    setRechargeModalVisible(true);\n  };\n\n  const submitRecharge = async () => {\n    if (!selectedUser || rechargeAmount <= 0) {\n      message.error('请输入正确的积分数量');\n      return;\n    }\n\n    try {\n      setRechargeLoading(true);\n      if (rechargeAmount > selectedUser.credits && !selectedUser) {\n        message.error('扣除积分不能大于用户当前积分');\n        return;\n      }\n      \n      if (selectedUser.credits < rechargeAmount) {\n        message.error('扣除积分不能大于用户当前积分');\n        return;\n      }\n\n      if (rechargeAmount > selectedUser.credits && rechargeAmount > 0) {\n        const result = await creditService.recharge(selectedUser.id, rechargeAmount, rechargeDescription);\n        message.success(`已成功为用户 ${selectedUser.username} 充值 ${rechargeAmount} 积分`);\n      } else if (rechargeAmount > 0) {\n        const result = await creditService.deduct(selectedUser.id, rechargeAmount, rechargeDescription);\n        message.success(`已成功从用户 ${selectedUser.username} 扣除 ${rechargeAmount} 积分`);\n      }\n      \n      setRechargeModalVisible(false);\n      fetchUserCredits();\n      fetchStats();\n    } catch (error: any) {\n      message.error(error.response?.data?.detail || '操作失败');\n    } finally {\n      setRechargeLoading(false);\n    }\n  };\n\n  const handleViewTransactions = async (user: UserCredit) => {\n    setSelectedUser(user);\n    setTransactionModalVisible(true);\n    setTransactionLoading(true);\n    \n    try {\n      const data = await creditService.getTransactions(1, 50, { user_id: user.id });\n      setTransactions(data.transactions);\n    } catch (error) {\n      message.error('获取流水记录失败');\n    } finally {\n      setTransactionLoading(false);\n    }\n  };\n\n  const getTransactionTypeTag = (type: string) => {\n    const typeMap: Record<string, { color: string; text: string }> = {\n      admin_recharge: { color: 'green', text: '管理员充值' },\n      admin_deduct: { color: 'red', text: '管理员扣除' },\n      generation: { color: 'blue', text: '生成消耗' },\n      payment: { color: 'purple', text: '购买积分' },\n      refund: { color: 'orange', text: '退款' },\n    };\n    const info = typeMap[type] || { color: 'default', text: type };\n    return <Tag color={info.color}>{info.text}</Tag>;\n  };\n\n  const transactionColumns = [\n    {\n      title: 'ID',\n      dataIndex: 'id',\n      key: 'id',\n      width: 80,\n    },\n    {\n      title: '变化',\n      dataIndex: 'amount',\n      key: 'amount',\n      width: 100,\n      render: (amount: number) => (\n        <span style={{ color: amount >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>\n          {amount >= 0 ? `+${amount}` : amount}\n        </span>\n      ),\n    },\n    {\n      title: '余额',\n      dataIndex: 'balance_after',\n      key: 'balance_after',\n      width: 100,\n    },\n    {\n      title: '类型',\n      dataIndex: 'transaction_type',\n      key: 'transaction_type',\n      width: 120,\n      render: (type: string) => getTransactionTypeTag(type),\n    },\n    {\n      title: '说明',\n      dataIndex: 'description',\n      key: 'description',\n      ellipsis: true,\n    },\n    {\n      title: '时间',\n      dataIndex: 'created_at',\n      key: 'created_at',\n      width: 180,\n      render: (createdAt: string) => new Date(createdAt).toLocaleString('zh-CN'),\n    },\n  ];\n\n  const columns = [\n    {\n      title: 'ID',\n      dataIndex: 'id',\n      key: 'id',\n      width: 80,\n    },\n    {\n      title: '用户名',\n      dataIndex: 'username',\n      key: 'username',\n      width: 150,\n    },\n    {\n      title: '邮箱',\n      dataIndex: 'email',\n      key: 'email',\n      width: 200,\n    },\n    {\n      title: '当前积分',\n      dataIndex: 'credits',\n      key: 'credits',\n      width: 100,\n      render: (credits: number) => (\n        <Tag color=\"blue\" style={{ fontSize: 16, padding: '4px 8px' }}>\n          {credits}\n        </Tag>\n      ),\n    },\n    {\n      title: '今日生成',\n      dataIndex: 'daily_generation_count',\n      key: 'daily_generation_count',\n      width: 100,\n    },\n    {\n      title: '总生成数',\n      dataIndex: 'total_generations',\n      key: 'total_generations',\n      width: 100,\n    },\n    {\n      title: '注册时间',\n      dataIndex: 'created_at',\n      key: 'created_at',\n      width: 180,\n      render: (createdAt: string) => new Date(createdAt).toLocaleString('zh-CN'),\n    },\n    {\n      title: '操作',\n      key: 'action',\n      width: 200,\n      render: (_: any, record: UserCredit) => (\n        <Space size=\"small\">\n          <Button \n            type=\"primary\" \n            size=\"small\" \n            icon={<PlusOutlined />}\n            onClick={() => {\n              setSelectedUser(record);\n              setRechargeAmount(0);\n              setRechargeDescription('');\n              setRechargeModalVisible(true);\n            }}\n          >\n            充值\n          </Button>\n          <Button \n            size=\"small\" \n            icon={<MinusOutlined />}\n            onClick={() => {\n              setSelectedUser(record);\n              setRechargeAmount(0);\n              setRechargeDescription('');\n              setRechargeModalVisible(true);\n            }}\n            danger\n          >\n            扣除\n          </Button>\n          <Button \n            type=\"link\" \n            size=\"small\" \n            icon={<HistoryOutlined />}\n            onClick={() => handleViewTransactions(record)}\n          >\n            流水\n          </Button>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <h2>积分管理</h2>\n      <Row gutter={16} style={{ marginBottom: 24 }}>\n        <Col span={8}>\n          <Card>\n            <Statistic\n              title=\"用户总积分\"\n              value={stats.totalCredits}\n              prefix={<DollarOutlined />}\n            />\n          </Card>\n        </Col>\n        <Col span={8}>\n          <Card>\n            <Statistic\n              title=\"用户总数\"\n              value={stats.totalUsers}\n              prefix={<span>👥</span>}\n            />\n          </Card>\n        </Col>\n        <Col span={8}>\n          <Card>\n            <Statistic\n              title=\"总交易笔数\"\n              value={stats.totalTransactions}\n              prefix={<HistoryOutlined />}\n            />\n          </Card>\n        </Col>\n      </Row>\n\n      <Space style={{ marginBottom: 16 }}>\n        <Button icon={<ReloadOutlined />} onClick={() => { fetchUserCredits(); fetchStats(); }}>\n          刷新\n        </Button>\n        <Button icon={<HistoryOutlined />} onClick={() => {\n          setSelectedUser(null);\n          setTransactionModalVisible(true);\n          setTransactionLoading(true);\n          creditService.getTransactions(1, 100).then(data => {\n            setTransactions(data.transactions);\n            setTransactionLoading(false);\n          }).catch(() => {\n            setTransactionLoading(false);\n          });\n        }}>\n          所有流水\n        </Button>\n      </Space>\n\n      {loading ? (\n        <div style={{ textAlign: 'center', padding: '50px' }}>\n          <Spin size=\"large\" />\n        </div>\n      ) : (\n        <Table\n          columns={columns}\n          dataSource={userCredits}\n          rowKey=\"id\"\n          pagination={{\n            current: pagination.current,\n            pageSize: pagination.pageSize,\n            total: pagination.total,\n            showSizeChanger: true,\n            showQuickJumper: true,\n            showTotal: (total) => `共 ${total} 条`,\n            onChange: (page, pageSize) => {\n              setPagination({ current: page, pageSize, total: pagination.total });\n            },\n          }}\n        />\n      )}\n\n      <Modal\n        title={selectedUser ? `调整用户 ${selectedUser.username} 的积分` : '积分调整'}\n        open={rechargeModalVisible}\n        onCancel={() => setRechargeModalVisible(false)}\n        footer={[\n          <Button key=\"cancel\" onClick={() => setRechargeModalVisible(false)}>\n            取消\n          </Button>,\n          <Button key=\"deduct\" danger onClick={submitRecharge} loading={rechargeLoading}>\n            确认扣除\n          </Button>,\n          <Button key=\"recharge\" type=\"primary\" onClick={submitRecharge} loading={rechargeLoading}>\n            确认充值\n          </Button>,\n        ]}\n      >\n        <div style={{ marginBottom: 16 }}>\n          <p><strong>用户：</strong>{selectedUser?.username} ({selectedUser?.email})</p>\n          <p><strong>当前积分：</strong>{selectedUser?.credits}</p>\n        </div>\n        <div style={{ marginBottom: 16 }}>\n          <label style={{ display: 'block', marginBottom: 8 }}>调整积分数量：</label>\n          <InputNumber\n            style={{ width: '100%' }}\n            value={rechargeAmount}\n            onChange={(value) => setRechargeAmount(value || 0)}\n            min={0}\n            max={selectedUser?.credits || 999999}\n            placeholder=\"请输入积分数量\"\n          />\n          <p style={{ marginTop: 4, color: '#999', fontSize: 12 }}>\n            输入正数为充值，输入负数为扣除（不能超过当前积分）\n          </p>\n        </div>\n        <div>\n          <label style={{ display: 'block', marginBottom: 8 }}>说明（可选）：</label>\n          <Input.TextArea\n            value={rechargeDescription}\n            onChange={(e) => setRechargeDescription(e.target.value)}\n            placeholder=\"请输入调整原因\"\n            rows={3}\n          />\n        </div>\n        {selectedUser && rechargeAmount > 0 && (\n          <div style={{ marginTop: 16, padding: 12, background: '#f5f5f5', borderRadius: 4 }}>\n            <p><strong>操作后积分：</strong>{selectedUser.credits + rechargeAmount}</p>\n          </div>\n        )}\n      </Modal>\n\n      <Modal\n        title={selectedUser ? `${selectedUser.username} 的流水记录` : '所有流水记录'}\n        open={transactionModalVisible}\n        onCancel={() => setTransactionModalVisible(false)}\n        footer={[\n          <Button key=\"close\" onClick={() => setTransactionModalVisible(false)}>\n            关闭\n          </Button>,\n        ]}\n        width={900}\n      >\n        {transactionLoading ? (\n          <div style={{ textAlign: 'center', padding: '50px' }}>\n            <Spin size=\"large\" />\n          </div>\n        ) : (\n          <Table\n            columns={transactionColumns}\n            dataSource={transactions}\n            rowKey=\"id\"\n            pagination={{\n              showSizeChanger: true,\n              showTotal: (total) => `共 ${total} 条`,\n            }}\n          />\n        )}\n      </Modal>\n    </div>\n  );\n};\n\nexport default CreditsManage;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Credits/Manage.tsx"
+    },
+    "8": {
+      "path": "/generations/list",
+      "file": "@/pages/Generations/List.tsx",
+      "parentId": "2",
+      "id": "8",
+      "absPath": "/generations/list",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Table, Button, Space, Tag, Modal, message, Popconfirm, Input, Select, DatePicker } from 'antd';\nimport { DeleteOutlined, ReloadOutlined, EyeOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';\nimport { generationService, Generation } from '../../services/api';\n\nconst { Option } = Select;\nconst { RangePicker } = DatePicker;\n\nconst GenerationsList: React.FC = () => {\n  const [generations, setGenerations] = useState<Generation[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [pagination, setPagination] = useState({\n    current: 1,\n    pageSize: 20,\n    total: 0,\n  });\n  const [filters, setFilters] = useState<{\n    status?: string;\n    provider?: string;\n    user_id?: number;\n    start_date?: string;\n    end_date?: string;\n  }>({});\n  const [detailModalVisible, setDetailModalVisible] = useState(false);\n  const [selectedGeneration, setSelectedGeneration] = useState<Generation | null>(null);\n\n  useEffect(() => {\n    fetchGenerations();\n  }, [pagination.current, pagination.pageSize, filters]);\n\n  const fetchGenerations = async () => {\n    try {\n      setLoading(true);\n      const data = await generationService.getAdminList(\n        pagination.current,\n        pagination.pageSize,\n        filters\n      );\n      setGenerations(data.generations);\n      setPagination(prev => ({ ...prev, total: data.total }));\n    } catch (error) {\n      message.error('获取生成记录失败');\n      console.error('Failed to fetch generations:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleDelete = async (id: number) => {\n    try {\n      await generationService.delete(id);\n      message.success('删除成功');\n      fetchGenerations();\n    } catch (error) {\n      message.error('删除失败');\n    }\n  };\n\n  const handleRetry = async (id: number) => {\n    try {\n      await generationService.retry(id);\n      message.success('已重新提交生成任务');\n      fetchGenerations();\n    } catch (error) {\n      message.error('重试失败');\n    }\n  };\n\n  const handleViewDetail = (generation: Generation) => {\n    setSelectedGeneration(generation);\n    setDetailModalVisible(true);\n  };\n\n  const getStatusTag = (status: string) => {\n    const colorMap: Record<string, string> = {\n      pending: 'orange',\n      processing: 'blue',\n      completed: 'green',\n      failed: 'red',\n    };\n    const textMap: Record<string, string> = {\n      pending: '等待中',\n      processing: '处理中',\n      completed: '已完成',\n      failed: '失败',\n    };\n    return <Tag color={colorMap[status] || 'default'}>{textMap[status] || status}</Tag>;\n  };\n\n  const columns = [\n    {\n      title: 'ID',\n      dataIndex: 'id',\n      key: 'id',\n      width: 80,\n    },\n    {\n      title: '用户',\n      dataIndex: 'user',\n      key: 'user',\n      width: 150,\n      render: (user: any) => (\n        <span>{user?.username || '-'}</span>\n      ),\n    },\n    {\n      title: 'Prompt',\n      dataIndex: 'prompt',\n      key: 'prompt',\n      width: 300,\n      ellipsis: true,\n    },\n    {\n      title: '尺寸',\n      dataIndex: 'size',\n      key: 'size',\n      width: 100,\n    },\n    {\n      title: '供应商',\n      dataIndex: 'provider',\n      key: 'provider',\n      width: 100,\n      render: (provider: string) => <Tag>{provider}</Tag>,\n    },\n    {\n      title: '状态',\n      dataIndex: 'status',\n      key: 'status',\n      width: 100,\n      render: (status: string) => getStatusTag(status),\n    },\n    {\n      title: '费用(USD)',\n      dataIndex: 'cost_usd',\n      key: 'cost_usd',\n      width: 100,\n      render: (cost: number) => `$${cost?.toFixed(4) || '0.0000'}`,\n    },\n    {\n      title: '时间',\n      dataIndex: 'created_at',\n      key: 'created_at',\n      width: 180,\n      render: (createdAt: string) => new Date(createdAt).toLocaleString('zh-CN'),\n    },\n    {\n      title: '操作',\n      key: 'action',\n      width: 200,\n      render: (_: any, record: Generation) => (\n        <Space size=\"small\">\n          <Button \n            type=\"link\" \n            size=\"small\" \n            icon={<EyeOutlined />}\n            onClick={() => handleViewDetail(record)}\n          >\n            查看\n          </Button>\n          {record.status === 'failed' && (\n            <Button \n              type=\"link\" \n              size=\"small\" \n              icon={<SyncOutlined spin />}\n              onClick={() => handleRetry(record.id)}\n            >\n              重试\n            </Button>\n          )}\n          <Popconfirm\n            title=\"确定删除这条记录？\"\n            onConfirm={() => handleDelete(record.id)}\n            okText=\"确定\"\n            cancelText=\"取消\"\n          >\n            <Button \n              type=\"link\" \n              size=\"small\" \n              danger \n              icon={<DeleteOutlined />}\n            >\n              删除\n            </Button>\n          </Popconfirm>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <div style={{ marginBottom: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>\n        <Select\n          placeholder=\"状态筛选\"\n          style={{ width: 120 }}\n          allowClear\n          onChange={(value) => setFilters({ ...filters, status: value })}\n        >\n          <Option value=\"pending\">等待中</Option>\n          <Option value=\"processing\">处理中</Option>\n          <Option value=\"completed\">已完成</Option>\n          <Option value=\"failed\">失败</Option>\n        </Select>\n        <Select\n          placeholder=\"供应商\"\n          style={{ width: 120 }}\n          allowClear\n          onChange={(value) => setFilters({ ...filters, provider: value })}\n        >\n          <Option value=\"openai\">OpenAI</Option>\n          <Option value=\"relay\">Relay</Option>\n        </Select>\n        <Input\n          placeholder=\"用户ID\"\n          style={{ width: 100 }}\n          type=\"number\"\n          onChange={(e) => setFilters({ ...filters, user_id: e.target.value ? parseInt(e.target.value) : undefined })}\n        />\n        <Button \n          type=\"primary\" \n          icon={<SearchOutlined />}\n          onClick={fetchGenerations}\n        >\n          搜索\n        </Button>\n        <Button onClick={() => {\n          setFilters({});\n          setPagination({ ...pagination, current: 1 });\n        }}>\n          重置\n        </Button>\n      </div>\n\n      <Table\n        columns={columns}\n        dataSource={generations}\n        rowKey=\"id\"\n        loading={loading}\n        pagination={{\n          current: pagination.current,\n          pageSize: pagination.pageSize,\n          total: pagination.total,\n          showSizeChanger: true,\n          showTotal: (total) => `共 ${total} 条`,\n          onChange: (page, pageSize) => {\n            setPagination({ current: page, pageSize, total: pagination.total });\n          },\n        }}\n      />\n\n      <Modal\n        title=\"生成详情\"\n        open={detailModalVisible}\n        onCancel={() => setDetailModalVisible(false)}\n        footer={[\n          <Button key=\"close\" onClick={() => setDetailModalVisible(false)}>\n            关闭\n          </Button>,\n        ]}\n        width={800}\n      >\n        {selectedGeneration && (\n          <div>\n            <p><strong>ID：</strong>{selectedGeneration.id}</p>\n            <p><strong>用户：</strong>{selectedGeneration.user?.username} ({selectedGeneration.user?.email})</p>\n            <p><strong>Prompt：</strong></p>\n            <div style={{ \n              background: '#f5f5f5', \n              padding: 12, \n              borderRadius: 4,\n              wordBreak: 'break-word',\n              maxHeight: 200,\n              overflow: 'auto'\n            }}>\n              {selectedGeneration.prompt}\n            </div>\n            <p style={{ marginTop: 16 }}><strong>参数：</strong></p>\n            <ul>\n              <li>尺寸：{selectedGeneration.size}</li>\n              <li>质量：{selectedGeneration.quality}</li>\n              <li>数量：{selectedGeneration.n}</li>\n              <li>供应商：{selectedGeneration.provider}</li>\n            </ul>\n            <p><strong>状态：</strong>{getStatusTag(selectedGeneration.status)}</p>\n            <p><strong>费用：</strong>${selectedGeneration.cost_usd?.toFixed(4)}</p>\n            <p><strong>积分：</strong>{selectedGeneration.credits_cost}</p>\n            <p><strong>点赞数：</strong>{selectedGeneration.likes_count}</p>\n            <p><strong>浏览数：</strong>{selectedGeneration.views_count}</p>\n            {selectedGeneration.error_message && (\n              <>\n                <p><strong>错误信息：</strong></p>\n                <div style={{ \n                  background: '#fff2f0', \n                  padding: 12, \n                  borderRadius: 4,\n                  color: '#ff4d4f'\n                }}>\n                  {selectedGeneration.error_message}\n                </div>\n              </>\n            )}\n            {selectedGeneration.images && selectedGeneration.images.length > 0 && (\n              <>\n                <p style={{ marginTop: 16 }}><strong>生成图片：</strong></p>\n                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>\n                  {selectedGeneration.images.map((img: any, idx: number) => {\n                    const url = typeof img === 'string' ? img : img.url;\n                    return (\n                      <img \n                        key={idx}\n                        src={url}\n                        alt={`Generated ${idx + 1}`}\n                        style={{ \n                          width: 200, \n                          height: 200, \n                          objectFit: 'cover',\n                          borderRadius: 4,\n                          border: '1px solid #d9d9d9'\n                        }}\n                        onClick={() => window.open(url, '_blank')}\n                      />\n                    );\n                  })}\n                </div>\n              </>\n            )}\n          </div>\n        )}\n      </Modal>\n    </div>\n  );\n};\n\nexport default GenerationsList;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Generations/List.tsx"
+    },
+    "9": {
+      "path": "/templates/list",
+      "file": "@/pages/Templates/List.tsx",
+      "parentId": "2",
+      "id": "9",
+      "absPath": "/templates/list",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Table, Tag, Space, Button, Modal, Form, Input, Select, message, Popconfirm } from 'antd';\nimport { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\n\nconst { TextArea } = Input;\n\ninterface Template {\n  id?: number;\n  name: string;\n  description?: string;\n  category?: string;\n  prompt: string;\n  tags?: string[];\n  is_active: boolean;\n  is_public: boolean;\n  usage_count: number;\n  creator_id?: number;\n  created_at?: string;\n  updated_at?: string;\n}\n\nconst TemplateList: React.FC = () => {\n  const [templates, setTemplates] = useState<Template[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [modalVisible, setModalVisible] = useState(false);\n  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);\n  const [form] = Form.useForm();\n  const navigate = useNavigate();\n\n  useEffect(() => {\n    const token = localStorage.getItem('admin_token');\n    if (!token) {\n      navigate('/login');\n      return;\n    }\n    fetchTemplates();\n  }, []);\n\n  const fetchTemplates = async () => {\n    try {\n      setLoading(true);\n      const response = await fetch('/api/v1/admin/templates', {\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,\n        },\n      });\n      if (response.status === 401 || response.status === 403) {\n        localStorage.removeItem('admin_token');\n        message.error('请重新登录');\n        navigate('/login');\n        return;\n      }\n      const data = await response.json();\n      setTemplates(data.templates || []);\n    } catch (error) {\n      message.error('获取模板列表失败');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleAdd = () => {\n    setEditingTemplate(null);\n    form.resetFields();\n    setModalVisible(true);\n  };\n\n  const handleEdit = (record: Template) => {\n    setEditingTemplate(record);\n    form.setFieldsValue(record);\n    setModalVisible(true);\n  };\n\n  const handleDelete = async (id: number) => {\n    try {\n      const response = await fetch(`/api/v1/admin/templates/${id}`, {\n        method: 'DELETE',\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,\n        },\n      });\n      if (response.ok) {\n        message.success('删除成功');\n        fetchTemplates();\n      } else {\n        message.error('删除失败');\n      }\n    } catch (error) {\n      message.error('删除失败');\n    }\n  };\n\n  const handleSubmit = async (values: any) => {\n    try {\n      const url = editingTemplate?.id \n        ? `/api/v1/admin/templates/${editingTemplate.id}` \n        : '/api/v1/admin/templates';\n      const method = editingTemplate?.id ? 'PATCH' : 'POST';\n      \n      const response = await fetch(url, {\n        method,\n        headers: {\n          'Content-Type': 'application/json',\n          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,\n        },\n        body: JSON.stringify(values),\n      });\n      \n      if (response.ok) {\n        message.success(editingTemplate?.id ? '更新成功' : '创建成功');\n        setModalVisible(false);\n        fetchTemplates();\n      } else {\n        message.error('操作失败');\n      }\n    } catch (error) {\n      message.error('操作失败');\n    }\n  };\n\n  const columns = [\n    { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },\n    { title: '名称', dataIndex: 'name', key: 'name', width: 150 },\n    { title: '分类', dataIndex: 'category', key: 'category', width: 100 },\n    { title: '描述', dataIndex: 'description', key: 'description', ellipsis: true },\n    {\n      title: '状态',\n      dataIndex: 'is_active',\n      key: 'is_active',\n      width: 100,\n      render: (isActive: boolean) => (\n        <Tag color={isActive ? 'green' : 'red'}>\n          {isActive ? '启用' : '禁用'}\n        </Tag>\n      ),\n    },\n    { title: '使用次数', dataIndex: 'usage_count', key: 'usage_count', width: 100 },\n    { title: '创建时间', dataIndex: 'created_at', key: 'created_at', width: 180 },\n    {\n      title: '操作',\n      key: 'action',\n      width: 150,\n      render: (_: any, record: Template) => (\n        <Space size=\"small\">\n          <Button type=\"link\" size=\"small\" icon={<EditOutlined />} onClick={() => handleEdit(record)}>\n            编辑\n          </Button>\n          <Popconfirm\n            title=\"确定删除这个模板？\"\n            onConfirm={() => record.id && handleDelete(record.id)}\n          >\n            <Button type=\"link\" size=\"small\" danger icon={<DeleteOutlined />}>\n              删除\n            </Button>\n          </Popconfirm>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <h2>提示词模板管理</h2>\n      <Space style={{ marginBottom: 16 }}>\n        <Button type=\"primary\" icon={<PlusOutlined />} onClick={handleAdd}>\n          添加模板\n        </Button>\n        <Button icon={<SearchOutlined />} onClick={fetchTemplates}>\n          刷新\n        </Button>\n      </Space>\n      <Table\n        columns={columns}\n        dataSource={templates}\n        rowKey=\"id\"\n        loading={loading}\n        pagination={{ pageSize: 10 }}\n      />\n\n      <Modal\n        title={editingTemplate?.id ? '编辑模板' : '添加模板'}\n        open={modalVisible}\n        onCancel={() => setModalVisible(false)}\n        footer={null}\n        width={600}\n      >\n        <Form\n          form={form}\n          onFinish={handleSubmit}\n          initialValues={{ is_active: true, is_public: false }}\n        >\n          <Form.Item name=\"name\" label=\"模板名称\" rules={[{ required: true, message: '请输入模板名称' }]}>\n            <Input placeholder=\"请输入模板名称\" />\n          </Form.Item>\n          <Form.Item name=\"category\" label=\"分类\">\n            <Input placeholder=\"请输入分类\" />\n          </Form.Item>\n          <Form.Item name=\"description\" label=\"描述\">\n            <Input.TextArea rows={2} placeholder=\"请输入描述\" />\n          </Form.Item>\n          <Form.Item name=\"prompt\" label=\"Prompt模板\" rules={[{ required: true, message: '请输入Prompt模板' }]}>\n            <TextArea rows={4} placeholder=\"请输入Prompt模板内容，可以使用{placeholder}表示变量\" />\n          </Form.Item>\n          <Form.Item name=\"is_active\" label=\"启用状态\" valuePropName=\"checked\">\n            <span>启用</span>\n          </Form.Item>\n          <Form.Item>\n            <Space>\n              <Button type=\"primary\" htmlType=\"submit\">\n                提交\n              </Button>\n              <Button onClick={() => setModalVisible(false)}>\n                取消\n              </Button>\n            </Space>\n          </Form.Item>\n        </Form>\n      </Modal>\n    </div>\n  );\n};\n\nexport default TemplateList;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Templates/List.tsx"
+    },
+    "10": {
+      "path": "/settings",
+      "file": "@/pages/Settings.tsx",
+      "parentId": "2",
+      "id": "10",
+      "absPath": "/settings",
+      "__content": "import React, { useEffect, useState } from 'react';\nimport { Card, Form, Input, Button, Switch, message, Tabs, Table, Tag, Space, Modal } from 'antd';\nimport { SaveOutlined, ReloadOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\n\ninterface ConfigItem {\n  key: string;\n  value: string;\n  description?: string;\n}\n\nconst Settings: React.FC = () => {\n  const [loading, setLoading] = useState(false);\n  const [configs, setConfigs] = useState<Record<string, string>>({});\n  const [editModalVisible, setEditModalVisible] = useState(false);\n  const [editingKey, setEditingKey] = useState('');\n  const [editValue, setEditValue] = useState('');\n  const [editDescription, setEditDescription] = useState('');\n  const navigate = useNavigate();\n\n  useEffect(() => {\n    const token = localStorage.getItem('admin_token');\n    if (!token) {\n      navigate('/login');\n      return;\n    }\n    fetchConfigs();\n  }, []);\n\n  const fetchConfigs = async () => {\n    setLoading(true);\n    try {\n      const response = await fetch('/api/v1/admin/config', {\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,\n        },\n      });\n      \n      if (response.status === 401 || response.status === 403) {\n        localStorage.removeItem('admin_token');\n        message.error('请重新登录');\n        navigate('/login');\n        return;\n      }\n\n      const data = await response.json();\n      const configMap: Record<string, string> = {};\n      (data.configs || []).forEach((item: ConfigItem) => {\n        configMap[item.key] = item.value;\n      });\n      setConfigs(configMap);\n    } catch (error) {\n      message.error('获取配置失败');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleSave = async (key: string, value: string, description?: string) => {\n    try {\n      const response = await fetch('/api/v1/admin/config', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,\n        },\n        body: JSON.stringify({ key, value, description }),\n      });\n\n      if (response.ok) {\n        message.success('配置保存成功');\n        fetchConfigs();\n        setEditModalVisible(false);\n      } else {\n        message.error('保存失败');\n      }\n    } catch (error) {\n      message.error('保存失败');\n    }\n  };\n\n  const handleEdit = (key: string) => {\n    setEditingKey(key);\n    setEditValue(configs[key] || '');\n    setEditDescription(getConfigDescription(key));\n    setEditModalVisible(true);\n  };\n\n  const getConfigDescription = (key: string) => {\n    const descriptions: Record<string, string> = {\n      site_name: '网站名称',\n      default_size: '默认图片尺寸',\n      default_quality: '默认图片质量',\n      daily_free_generations: '每日免费生成次数',\n      max_prompt_length: '最大Prompt长度',\n      openai_api_key: 'OpenAI API Key',\n      relay_api_key: 'Relay API Key',\n      relay_api_base_url: 'Relay API Base URL',\n    };\n    return descriptions[key] || '';\n  };\n\n  const settings = [\n    {\n      key: 'generation',\n      label: '生成配置',\n      items: [\n        { key: 'default_size', label: '默认图片尺寸', value: configs['default_size'] || '1024x1024', type: 'select', options: ['1024x1024', '1792x1024', '1024x1792'] },\n        { key: 'default_quality', label: '默认图片质量', value: configs['default_quality'] || 'standard', type: 'select', options: ['standard', 'hd'] },\n        { key: 'daily_free_generations', label: '每日免费次数', value: configs['daily_free_generations'] || '10' },\n        { key: 'max_prompt_length', label: '最大Prompt长度', value: configs['max_prompt_length'] || '4000' },\n      ],\n    },\n    {\n      key: 'api',\n      label: 'API配置',\n      items: [\n        { key: 'openai_api_key', label: 'OpenAI API Key', value: configs['openai_api_key'] || '', type: 'password' },\n        { key: 'relay_api_key', label: 'Relay API Key', value: configs['relay_api_key'] || '', type: 'password' },\n        { key: 'relay_api_base_url', label: 'Relay API Base URL', value: configs['relay_api_base_url'] || '' },\n      ],\n    },\n  ];\n\n  const configList = Object.keys(configs).map(key => ({\n    key,\n    value: configs[key],\n    description: getConfigDescription(key),\n  }));\n\n  return (\n    <div>\n      <h2>系统设置</h2>\n\n      <Tabs\n        defaultActiveKey=\"generation\"\n        items={[\n          {\n            key: 'generation',\n            label: '生成配置',\n            children: (\n              <Card loading={loading}>\n                <Form layout=\"vertical\">\n                  {settings[0].items.map(item => (\n                    <Form.Item key={item.key} label={item.label}>\n                      <Space.Compact>\n                        <Input\n                          value={configs[item.key] || item.value}\n                          onChange={e => setConfigs({ ...configs, [item.key]: e.target.value })}\n                          style={{ width: 300 }}\n                          type={item.type === 'password' ? 'password' : 'text'}\n                        />\n                        <Button type=\"primary\" onClick={() => handleSave(item.key, configs[item.key] || item.value)}>\n                          保存\n                        </Button>\n                      </Space.Compact>\n                    </Form.Item>\n                  ))}\n                </Form>\n              </Card>\n            ),\n          },\n          {\n            key: 'api',\n            label: 'API配置',\n            children: (\n              <Card loading={loading}>\n                <Form layout=\"vertical\">\n                  {settings[1].items.map(item => (\n                    <Form.Item key={item.key} label={item.label}>\n                      <Space.Compact>\n                        <Input\n                          value={configs[item.key] || item.value}\n                          onChange={e => setConfigs({ ...configs, [item.key]: e.target.value })}\n                          style={{ width: 400 }}\n                          type={item.type === 'password' ? 'password' : 'text'}\n                        />\n                        <Button type=\"primary\" onClick={() => handleSave(item.key, configs[item.key] || item.value)}>\n                          保存\n                        </Button>\n                      </Space.Compact>\n                    </Form.Item>\n                  ))}\n                </Form>\n              </Card>\n            ),\n          },\n          {\n            key: 'all',\n            label: '所有配置',\n            children: (\n              <Card\n                extra={<Button icon={<ReloadOutlined />} onClick={fetchConfigs}>刷新</Button>}\n                loading={loading}\n              >\n                <Table\n                  dataSource={configList}\n                  rowKey=\"key\"\n                  pagination={false}\n                  columns={[\n                    { title: '配置项', dataIndex: 'key', width: 200 },\n                    { title: '值', dataIndex: 'value', ellipsis: true },\n                    { title: '描述', dataIndex: 'description', width: 150 },\n                    {\n                      title: '操作',\n                      width: 100,\n                      render: (_, record) => (\n                        <Button type=\"link\" size=\"small\" onClick={() => handleEdit(record.key)}>\n                          编辑\n                        </Button>\n                      ),\n                    },\n                  ]}\n                />\n              </Card>\n            ),\n          },\n        ]}\n      />\n\n      <Modal\n        title=\"编辑配置\"\n        open={editModalVisible}\n        onCancel={() => setEditModalVisible(false)}\n        onOk={() => handleSave(editingKey, editValue, editDescription)}\n        onText=\"保存\"\n        onCancelText=\"取消\"\n      >\n        <Form layout=\"vertical\">\n          <Form.Item label=\"配置项\">\n            <Input value={editingKey} disabled />\n          </Form.Item>\n          <Form.Item label=\"配置值\">\n            <Input.TextArea\n              value={editValue}\n              onChange={e => setEditValue(e.target.value)}\n              rows={4}\n            />\n          </Form.Item>\n          <Form.Item label=\"描述\">\n            <Input\n              value={editDescription}\n              onChange={e => setEditDescription(e.target.value)}\n            />\n          </Form.Item>\n        </Form>\n      </Modal>\n    </div>\n  );\n};\n\nexport default Settings;",
+      "__isJSFile": true,
+      "__absFile": "/data/ai-image/ai-image-gen/admin/src/pages/Settings.tsx"
+    }
+  },
+  "apiRoutes": {},
+  "hasSrcDir": true,
+  "npmClient": "npm",
+  "umi": {
+    "version": "4.6.48",
+    "name": "Umi",
+    "importSource": "umi",
+    "cliName": "umi"
+  },
+  "bundleStatus": {
+    "done": false
+  },
+  "mfsuBundleStatus": {
+    "done": false
+  },
+  "react": {
+    "version": "18.3.1",
+    "path": "/data/ai-image/ai-image-gen/admin/node_modules/react"
+  },
+  "react-dom": {
+    "version": "18.3.1",
+    "path": "/data/ai-image/ai-image-gen/admin/node_modules/react-dom"
+  },
+  "appJS": null,
+  "locale": "en-US",
+  "globalCSS": [],
+  "globalJS": [],
+  "overridesCSS": [],
+  "bundler": "webpack",
+  "git": {
+    "originUrl": "https://github.com/godricwuhao-droid/ai-image-gen.git"
+  },
+  "framework": "react",
+  "typescript": {
+    "tsVersion": "5.9.3",
+    "tslibVersion": "2.8.1"
+  },
+  "faviconFiles": [],
+  "port": 8002,
+  "host": "0.0.0.0",
+  "ip": "192.168.180.244"
+}
