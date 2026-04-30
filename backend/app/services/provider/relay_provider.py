@@ -1,12 +1,55 @@
 import os
 import logging
 import json
-from typing import List
+from typing import List, Optional
 import httpx
 
-from .base import BaseProvider, GenerateRequest, GenerateResponse
+from .base import BaseProvider, GenerateRequest, ImageEditRequest, GenerateResponse
 
 logger = logging.getLogger(__name__)
+
+# =====================================================
+# 参数一致性原则：
+# 前端 → 自有后端 → Celery Worker → relay_provider → 中转站
+# 所有层级使用统一的参数值，relay_provider 仅做旧值兼容
+# =====================================================
+
+# 完整的尺寸映射表（直接传递，无需转换）
+SIZE_MAP = {
+    # 标准尺寸直接透传
+    "1024x1024": "1024x1024",
+    "1024x1536": "1024x1536",
+    "1536x1024": "1536x1024",
+    "2048x2048": "2048x2048",
+    "2048x1152": "2048x1152",
+    "3840x2160": "3840x2160",
+    "2160x3840": "2160x3840",
+    # 旧尺寸兼容映射（仅兼容历史数据）
+    "1024x1792": "1024x1536",
+    "1792x1024": "1536x1024",
+}
+
+# 质量映射（仅兼容旧版本，新版直接透传）
+QUALITY_MAP = {
+    # 标准值直接透传（新版）
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    # 旧值兼容映射（兼容历史数据）
+    "standard": "medium",
+    "hd": "high",
+}
+
+
+def normalize_quality(quality: str) -> str:
+    """规范化质量参数"""
+    return QUALITY_MAP.get(quality, quality)
+
+
+def normalize_size(size: str) -> str:
+    """规范化尺寸参数"""
+    return SIZE_MAP.get(size, "1024x1024")
+
 
 # 中转站官方错误码映射
 RELAY_ERROR_MAP = {
@@ -47,30 +90,27 @@ def parse_error_response(response_text: str, status_code: int) -> str:
         data = json.loads(response_text)
     except json.JSONDecodeError:
         return HTTP_STATUS_MAP.get(status_code, "服务暂时不可用，请稍后再试")
-    
+
     error_code = None
     inner_code = None
-    
-    # 首先检查内层错误码（上游服务的错误）
+
     if "message" in data and isinstance(data["message"], dict):
         inner_error = data["message"].get("error", {})
         inner_code = inner_error.get("code")
-        
+
         if not inner_code:
             metadata = data.get("metadata", {})
             details = metadata.get("details", {})
             if isinstance(details, dict):
                 inner_code = details.get("code")
-    
-    # 优先检查上游服务错误码
+
     if inner_code and inner_code in UPSTREAM_ERROR_MAP:
         return UPSTREAM_ERROR_MAP[inner_code]
-    
-    # 检查中转站官方错误码
+
     error_code = data.get("reason") or data.get("code")
     if error_code and error_code in RELAY_ERROR_MAP:
         return RELAY_ERROR_MAP[error_code]
-    
+
     return HTTP_STATUS_MAP.get(status_code, "生成失败，请稍后再试")
 
 
@@ -101,37 +141,24 @@ class RelayAPIProvider(BaseProvider):
     async def generate(self, req: GenerateRequest) -> GenerateResponse:
         """
         Generate images using the relay API
-        
+
         Args:
             req: GenerateRequest with prompt and parameters
-            
+
         Returns:
             GenerateResponse with generated images
-            
+
         Note:
-            - quality: standard→medium, hd→high
-            - size: 1024x1792→1024x1536, 1792x1024→1536x1024
+            - 前端传递的 quality/size 直接透传
+            - 仅在 relay_provider 内部做旧值兼容映射
         """
         if not self.api_key:
             raise ValueError("RELAY_API_KEY not configured")
 
         prompt = req.prompt.strip()
-        
-        quality_map = {
-            "standard": "medium",
-            "hd": "high",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-        }
-        api_quality = quality_map.get(req.quality, "medium")
 
-        size_map = {
-            "1024x1024": "1024x1024",
-            "1024x1792": "1024x1536",
-            "1536x1024": "1536x1024",
-        }
-        api_size = size_map.get(req.size, "1024x1024")
+        api_quality = normalize_quality(req.quality)
+        api_size = normalize_size(req.size)
 
         headers = {
             "Content-Type": "application/json",
@@ -143,17 +170,20 @@ class RelayAPIProvider(BaseProvider):
             "n": req.n,
             "size": api_size,
             "quality": api_quality,
-            "background": "auto",
-            "moderation": "auto",
-            "output_format": "png"
+            "background": req.background,
+            "moderation": req.moderation,
+            "output_format": req.output_format,
         }
+
+        if req.output_format == "jpeg" and req.output_compression is not None:
+            payload["output_compression"] = req.output_compression
 
         logger.info(f"[RelayAPI] 请求参数: {payload}")
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.BASE_URL}/gpt-image-2-text-to-image",
+                    f"{self.BASE_URL}/v1/images/generations",
                     headers=headers,
                     json=payload
                 )
@@ -184,9 +214,11 @@ class RelayAPIProvider(BaseProvider):
                                 "height": 1024
                             })
 
+                cost_usd = data.get("cost_usd", 0.0)
+
                 return GenerateResponse(
                     images=images,
-                    cost_usd=0.0,
+                    cost_usd=cost_usd,
                     provider="relay_api"
                 )
 
@@ -197,90 +229,71 @@ class RelayAPIProvider(BaseProvider):
             logger.error(f"[RelayAPI] HTTP error: {e}")
             raise ValueError(f"Request failed: {str(e)}")
 
-
-class ImageToImageProvider(BaseProvider):
-    """Image to Image generation using relay API (for future extension)"""
-
-    BASE_URL = os.getenv("RELAY_API_BASE_URL", "https://api.jiekou.ai/v3")
-
-    def __init__(self):
-        self.api_key = os.getenv("RELAY_API_KEY") or os.getenv("OPENAI_API_KEY")
-        self.timeout = 180
-
-    async def health_check(self) -> bool:
-        if not self.api_key:
-            return False
-        try:
-            async with httpx.AsyncClient(timeout=10) as client:
-                response = await client.get(
-                    f"{self.BASE_URL}/health",
-                    headers={"Authorization": f"Bearer {self.api_key}"}
-                )
-                return response.status_code == 200
-        except Exception:
-            return False
-
-    async def generate(self, req: GenerateRequest) -> GenerateResponse:
+    async def image_edit(self, req: ImageEditRequest) -> GenerateResponse:
         """
-        Generate images from image using the relay API
-        
+        Edit images using the relay API
+
         Args:
-            req: GenerateRequest with prompt and image URL
-            
+            req: ImageEditRequest with image, mask, and prompt
+
         Returns:
             GenerateResponse with generated images
         """
         if not self.api_key:
             raise ValueError("RELAY_API_KEY not configured")
 
+        api_quality = normalize_quality(req.quality)
+        api_size = normalize_size(req.size)
+
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        quality_map = {
-            "standard": "medium",
-            "hd": "high",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-        }
-        api_quality = quality_map.get(req.quality, "medium")
-
-        size_map = {
-            "1024x1024": "1024x1024",
-            "1024x1792": "1024x1536",
-            "1536x1024": "1536x1024",
-        }
-        api_size = size_map.get(req.size, "1024x1024")
-
         payload = {
+            "image": req.image,
             "prompt": req.prompt,
-            "image": getattr(req, 'image_url', ''),
             "n": req.n,
             "size": api_size,
             "quality": api_quality,
-            "output_format": "png"
+            "background": req.background,
+            "output_format": req.output_format,
         }
 
-        logger.info(f"[ImageToImageAPI] 请求参数: {payload}")
+        if req.mask:
+            payload["mask"] = req.mask
+
+        if req.output_format == "jpeg" and req.output_compression is not None:
+            payload["output_compression"] = req.output_compression
+
+        logger.info(f"[RelayAPI-ImageEdit] 请求参数: {payload}")
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.BASE_URL}/gpt-image-2-edit",
+                    f"{self.BASE_URL}/v1/images/edits",
                     headers=headers,
                     json=payload
                 )
 
                 if response.status_code != 200:
-                    raise ValueError(f"API error: {response.status_code}")
+                    user_message = parse_error_response(response.text, response.status_code)
+                    logger.error(f"[RelayAPI] 图片编辑失败: {user_message}")
+                    raise ValueError(user_message)
 
                 data = response.json()
-                logger.info(f"[ImageToImageAPI] 响应数据: {data}")
+                logger.info(f"[RelayAPI-ImageEdit] 响应数据: {data}")
 
                 images = []
-                if "images" in data:
+                if "data" in data:
+                    for item in data["data"]:
+                        if "url" in item:
+                            images.append({
+                                "url": item["url"],
+                                "width": item.get("width", 1024),
+                                "height": item.get("height", 1024)
+                            })
+                elif "images" in data:
                     for url in data["images"]:
                         if isinstance(url, str):
                             images.append({
@@ -289,14 +302,17 @@ class ImageToImageProvider(BaseProvider):
                                 "height": 1024
                             })
 
+                cost_usd = data.get("cost_usd", 0.0)
+
                 return GenerateResponse(
                     images=images,
-                    cost_usd=0.0,
-                    provider="relay_api_image2image"
+                    cost_usd=cost_usd,
+                    provider="relay_api_image_edit"
                 )
 
         except httpx.TimeoutException:
-            raise ValueError("Request timeout")
+            logger.error("[RelayAPI-ImageEdit] 请求超时")
+            raise ValueError("Request timeout, please try again")
         except httpx.HTTPError as e:
-            logger.error(f"[ImageToImageAPI] HTTP error: {e}")
+            logger.error(f"[RelayAPI-ImageEdit] HTTP error: {e}")
             raise ValueError(f"Request failed: {str(e)}")

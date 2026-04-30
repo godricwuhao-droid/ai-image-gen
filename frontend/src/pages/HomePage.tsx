@@ -1,27 +1,28 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { 
-  SparklesIcon, 
-  PhotoIcon, 
-  AdjustmentsHorizontalIcon, 
+import {
+  SparklesIcon,
+  PhotoIcon,
+  AdjustmentsHorizontalIcon,
   DocumentTextIcon,
   CheckCircleIcon,
   XCircleIcon,
   ClockIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
-  ClipboardDocumentListIcon
+  ClipboardDocumentListIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 const UploadIcon = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    strokeWidth={1.5} 
-    stroke="currentColor" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
     className={className}
   >
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
@@ -41,24 +42,77 @@ const STYLE_PRESETS = [
   { name: '产品摄影', prompt: 'product photography, commercial, studio lighting', icon: '📦' },
 ];
 
+// =====================================================
+// 质量选项（使用标准值：low/medium/high）
+// =====================================================
 const QUALITY_OPTIONS = [
-  { value: 'low', label: '快速模式', credits: 1, desc: '速度最快' },
-  { value: 'standard', label: '标准质量', credits: 10, desc: '平衡速度与质量' },
-  { value: 'hd', label: '高清品质', credits: 40, desc: '最佳质量' },
+  { value: 'low', label: '快速模式', credits: 1, desc: '速度最快，适合预览' },
+  { value: 'medium', label: '标准质量', credits: 10, desc: '平衡速度与质量（推荐）' },
+  { value: 'high', label: '高清品质', credits: 40, desc: '最佳质量，适合最终产出' },
 ];
 
+// =====================================================
+// 尺寸选项（7种标准尺寸）
+// =====================================================
 const SIZE_OPTIONS = [
-  { value: '1024x1024', label: '1024×1024' },
-  { value: '1024x1536', label: '1024×1536' },
-  { value: '1536x1024', label: '1536×1024' },
-  { value: 'auto', label: '自适应' },
+  { value: '1024x1024', label: '1024×1024', pixels: '1M', ratio: '1:1' },
+  { value: '1024x1536', label: '1024×1536', pixels: '1.5M', ratio: '2:3' },
+  { value: '1536x1024', label: '1536×1024', pixels: '1.5M', ratio: '3:2' },
+  { value: '2048x2048', label: '2048×2048', pixels: '4M', ratio: '1:1' },
+  { value: '2048x1152', label: '2048×1152', pixels: '2.3M', ratio: '16:9' },
+  { value: '3840x2160', label: '3840×2160', pixels: '8.3M', ratio: '16:4' },
+  { value: '2160x3840', label: '2160×3840', pixels: '8.3M', ratio: '9:16' },
 ];
 
 const COUNT_OPTIONS = [1, 2, 4];
 
-const calculateCredits = (quality: string, n: number): number => {
-  const map: Record<string, number> = { low: 1, standard: 10, hd: 40 };
-  return (map[quality] || 10) * n;
+// =====================================================
+// 输出格式选项
+// =====================================================
+const OUTPUT_FORMAT_OPTIONS = [
+  { value: 'png', label: 'PNG', desc: '无损质量，支持透明背景', icon: '📦' },
+  { value: 'jpeg', label: 'JPEG', desc: '文件较小，不支持透明', icon: '🗜️' },
+];
+
+// =====================================================
+// 背景设置选项
+// =====================================================
+const BACKGROUND_OPTIONS = [
+  { value: 'auto', label: '自动检测', desc: 'AI自动判断背景' },
+  { value: 'transparent', label: '透明背景', desc: '仅 PNG 支持' },
+  { value: 'opaque', label: '不透明背景', desc: '白色背景' },
+];
+
+// =====================================================
+// 内容审核选项
+// =====================================================
+const MODERATION_OPTIONS = [
+  { value: 'auto', label: '自动审核', desc: '标准内容过滤' },
+  { value: 'low', label: '低审核', desc: '可能通过更多内容' },
+];
+
+// =====================================================
+// 积分计算（基于质量 × 尺寸）
+// =====================================================
+const CREDITS_MAP: Record<string, Record<string, number>> = {
+  low: {
+    '1024x1024': 1, '1024x1536': 1, '1536x1024': 1,
+    '2048x2048': 2, '2048x1152': 1, '3840x2160': 2, '2160x3840': 2
+  },
+  medium: {
+    '1024x1024': 10, '1024x1536': 8, '1536x1024': 8,
+    '2048x2048': 20, '2048x1152': 8, '3840x2160': 19, '2160x3840': 19
+  },
+  high: {
+    '1024x1024': 40, '1024x1536': 32, '1536x1024': 32,
+    '2048x2048': 81, '2048x1152': 32, '3840x2160': 76, '2160x3840': 76
+  },
+};
+
+const calculateCredits = (quality: string, size: string, n: number): number => {
+  const creditsMap = CREDITS_MAP[quality] || CREDITS_MAP['medium'];
+  const creditsPerImage = creditsMap[size] || creditsMap['1024x1024'] || 10;
+  return creditsPerImage * n;
 };
 
 interface GenerationStatus {
@@ -79,8 +133,13 @@ export const HomePage = () => {
   const [prompt, setPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('');
   const [size, setSize] = useState('1024x1024');
-  const [quality, setQuality] = useState('standard');
+  const [quality, setQuality] = useState('medium');
   const [n, setN] = useState(1);
+  const [outputFormat, setOutputFormat] = useState('png');
+  const [outputCompression, setOutputCompression] = useState(80);
+  const [background, setBackground] = useState('auto');
+  const [moderation, setModeration] = useState('auto');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [currentGeneration, setCurrentGeneration] = useState<GenerationStatus | null>(null);
@@ -95,9 +154,9 @@ export const HomePage = () => {
     try {
       const response = await api.get('/generations?page=1&page_size=50');
       const generations = response.data.generations || [];
-      
+
       const promptMap = new Map<string, { count: number; lastUsed: string }>();
-      
+
       generations.forEach((gen: any) => {
         if (gen.prompt && gen.status === 'completed') {
           const existing = promptMap.get(gen.prompt);
@@ -114,7 +173,7 @@ export const HomePage = () => {
           }
         }
       });
-      
+
       const prompts: HistoryPrompt[] = Array.from(promptMap.entries())
         .map(([prompt, data]) => ({
           prompt,
@@ -123,7 +182,7 @@ export const HomePage = () => {
         }))
         .sort((a, b) => new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime())
         .slice(0, 10);
-      
+
       setHistoryPrompts(prompts);
     } catch (error) {
       console.error('Failed to fetch history prompts:', error);
@@ -146,12 +205,12 @@ export const HomePage = () => {
       toast.error('请上传图片文件');
       return;
     }
-    
+
     if (file.size > 10 * 1024 * 1024) {
       toast.error('图片大小不能超过10MB');
       return;
     }
-    
+
     setSelectedImage(file);
   }, []);
 
@@ -169,18 +228,18 @@ export const HomePage = () => {
     }
   };
 
-  const creditsCost = useMemo(() => calculateCredits(quality, n), [quality, n]);
+  const creditsCost = useMemo(() => calculateCredits(quality, size, n), [quality, size, n]);
 
   const pollGenerationStatus = useCallback(async (generationId: number) => {
-    const maxAttempts = 60;
+    const maxAttempts = 120;
     let attempts = 0;
-    const currentCreditsCost = calculateCredits(quality, n);
+    const currentCreditsCost = calculateCredits(quality, size, n);
 
     const poll = async () => {
       if (userClosedModalRef.current) {
         return;
       }
-      
+
       if (attempts >= maxAttempts) {
         setCurrentGeneration(prev => prev?.id === generationId ? {
           ...prev,
@@ -193,7 +252,7 @@ export const HomePage = () => {
       try {
         const response = await api.get(`/generations/${generationId}`);
         const gen = response.data;
-        
+
         if (gen.status === 'pending') {
           setCurrentGeneration({
             id: generationId,
@@ -215,10 +274,10 @@ export const HomePage = () => {
             message: '生成成功！',
             progress: 100
           });
-          
+
           setUserCredits(prev => prev - currentCreditsCost);
           toast.success('图片生成成功！');
-          
+
           setTimeout(() => {
             setShowFeedback(false);
             setCurrentGeneration(null);
@@ -233,13 +292,13 @@ export const HomePage = () => {
             message: gen.error_message || '生成失败',
             progress: 0
           });
-          
+
           const refundResponse = await api.post(`/generations/${generationId}/refund`);
           if (refundResponse.data.refunded) {
             setUserCredits(prev => prev + currentCreditsCost);
             toast.success(`积分已返还：${refundResponse.data.refunded_credits} 积分已退回账户`);
           }
-          
+
           setTimeout(() => {
             setShowFeedback(false);
             setCurrentGeneration(null);
@@ -253,7 +312,7 @@ export const HomePage = () => {
         if (userClosedModalRef.current) {
           return;
         }
-        
+
         attempts++;
         if (attempts < maxAttempts) {
           setTimeout(poll, 2000);
@@ -273,7 +332,7 @@ export const HomePage = () => {
     };
 
     poll();
-  }, [quality, n, navigate, fetchHistoryPrompts]);
+  }, [quality, size, n, navigate, fetchHistoryPrompts]);
 
   const handleClose = () => {
     userClosedModalRef.current = true;
@@ -285,12 +344,12 @@ export const HomePage = () => {
   const handleSubmit = async () => {
     if (!prompt.trim()) { toast.error('请输入图片描述'); return; }
     if (!isAuthenticated) { toast.error('请先登录'); return; }
-    
+
     const preset = STYLE_PRESETS.find(s => s.name === selectedStyle);
     const fullPrompt = preset ? `${prompt}, ${preset.prompt}` : prompt;
-    
+
     setShowFeedback(true);
-    
+
     if (selectedImage) {
       setCurrentGeneration({
         id: 0,
@@ -298,17 +357,19 @@ export const HomePage = () => {
         message: '正在提交图片编辑请求...',
         progress: 5
       });
-      
+
       const formData = new FormData();
       formData.append('prompt', fullPrompt);
       formData.append('image', selectedImage);
       formData.append('size', size);
       formData.append('quality', quality);
       formData.append('n', String(n));
-      
+      formData.append('output_format', outputFormat);
+      formData.append('background', background);
+
       try {
         const response = await api.post('/image-edit/upload', formData);
-        
+
         if (response.data.success) {
           setCurrentGeneration({
             id: response.data.generation_id,
@@ -316,10 +377,10 @@ export const HomePage = () => {
             message: '图片编辑成功！',
             progress: 100
           });
-          
+
           setUserCredits(prev => prev - creditsCost);
           toast.success('图片编辑成功！');
-          
+
           setTimeout(() => {
             setShowFeedback(false);
             setCurrentGeneration(null);
@@ -330,16 +391,16 @@ export const HomePage = () => {
         }
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || '图片编辑失败';
-        
+
         setCurrentGeneration({
           id: 0,
           status: 'failed',
           message: errorMsg,
           progress: 0
         });
-        
+
         toast.error(errorMsg);
-        
+
         setTimeout(() => {
           setShowFeedback(false);
           setCurrentGeneration(null);
@@ -352,15 +413,19 @@ export const HomePage = () => {
         message: '正在提交请求...',
         progress: 5
       });
-      
+
       try {
-        const response = await api.post('/generations', { 
-          prompt: fullPrompt, 
-          size, 
-          quality, 
-          n 
+        const response = await api.post('/generations', {
+          prompt: fullPrompt,
+          size,
+          quality,
+          n,
+          output_format: outputFormat,
+          background,
+          moderation,
+          output_compression: outputFormat === 'jpeg' ? outputCompression : undefined,
         });
-        
+
         const generation = response.data;
         setCurrentGeneration({
           id: generation.id,
@@ -368,13 +433,13 @@ export const HomePage = () => {
           message: '请求已提交，等待处理...',
           progress: 15
         });
-        
+
         pollGenerationStatus(generation.id);
         fetchHistoryPrompts();
-        
+
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || '生成失败';
-        
+
         if (err.response?.status === 402) {
           setCurrentGeneration({
             id: 0,
@@ -390,9 +455,9 @@ export const HomePage = () => {
             progress: 0
           });
         }
-        
+
         toast.error(errorMsg);
-        
+
         setTimeout(() => {
           setShowFeedback(false);
           setCurrentGeneration(null);
@@ -409,7 +474,7 @@ export const HomePage = () => {
 
   const getStatusIcon = () => {
     if (!currentGeneration) return null;
-    
+
     switch (currentGeneration.status) {
       case 'pending':
         return <ClockIcon className="w-12 h-12 text-blue-500 animate-pulse" />;
@@ -426,7 +491,7 @@ export const HomePage = () => {
 
   const getStatusColor = () => {
     if (!currentGeneration) return 'var(--color-accent)';
-    
+
     switch (currentGeneration.status) {
       case 'pending':
         return '#3B82F6';
@@ -440,6 +505,8 @@ export const HomePage = () => {
         return 'var(--color-accent)';
     }
   };
+
+  const formatInfo = SIZE_OPTIONS.find(s => s.value === size);
 
   return (
     <div className="page-container">
@@ -486,7 +553,7 @@ export const HomePage = () => {
             <div className="mb-6">
               {getStatusIcon()}
             </div>
-            
+
             <h3 className="text-2xl font-bold mb-3" style={{color: getStatusColor()}}>
               {selectedImage ? (
                 <>
@@ -504,25 +571,25 @@ export const HomePage = () => {
                 </>
               )}
             </h3>
-            
+
             <p className="text-lg mb-6" style={{color: 'var(--color-text-muted)'}}>
               {currentGeneration.message}
             </p>
-            
+
             {currentGeneration.status !== 'failed' && currentGeneration.status !== 'completed' && (
               <>
                 <div className="w-full h-2 rounded-full mb-4" style={{background: 'var(--color-border)'}}>
-                  <div 
+                  <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{width: `${currentGeneration.progress || 0}%`, background: getStatusColor()}}
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between text-sm mb-6" style={{color: 'var(--color-text-muted)'}}>
                   <span>进度 {currentGeneration.progress || 0}%</span>
-                  <span>预计需要 10-30 秒</span>
+                  <span>预计需要 10-60 秒</span>
                 </div>
-                
+
                 <button
                   onClick={handleClose}
                   className="btn btn-secondary w-full"
@@ -532,14 +599,14 @@ export const HomePage = () => {
                 </button>
               </>
             )}
-            
+
             {currentGeneration.status === 'failed' && (
               <div className="flex items-center justify-center gap-2 p-4 rounded-xl mb-4" style={{background: 'rgba(239, 68, 68, 0.1)'}}>
                 <ExclamationTriangleIcon className="w-5 h-5" style={{color: 'var(--color-danger)'}} />
                 <span className="text-sm" style={{color: 'var(--color-danger)'}}>积分将自动返还</span>
               </div>
             )}
-            
+
             {currentGeneration.status === 'completed' && (
               <button
                 onClick={() => {
@@ -578,8 +645,9 @@ export const HomePage = () => {
                 {SIZE_OPTIONS.map(opt => (
                   <button key={opt.value} onClick={() => setSize(opt.value)}
                     className={size === opt.value ? 'filter-tag filter-tag-active' : 'filter-tag'}
-                    style={{fontSize: '0.75rem', padding: '0.5rem 0.75rem'}}>
-                    {opt.label}
+                    style={{fontSize: '0.7rem', padding: '0.5rem 0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'}}>
+                    <span>{opt.label}</span>
+                    <span style={{opacity: 0.6, fontSize: '0.6rem'}}>{opt.pixels} {opt.ratio}</span>
                   </button>
                 ))}
               </div>
@@ -602,244 +670,239 @@ export const HomePage = () => {
               </div>
             </div>
 
-            {!isAuthenticated && (
-              <div className="card-elevated p-6 rounded-2xl text-center">
-                <p className="text-sm mb-4" style={{color: 'var(--color-text-muted)'}}>登录后开始创作</p>
-                <Link to="/login" className="btn btn-primary text-sm py-3 w-full rounded-xl">
-                  立即登录
-                </Link>
-                <p className="mt-3 text-xs" style={{color: 'var(--color-text-subtle)'}}>
-                  没有账户？<Link to="/register" className="font-medium" style={{color: 'var(--color-accent)'}}>注册</Link>
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="lg:col-span-8 space-y-5">
             <div className="card-elevated p-6 rounded-2xl">
-              <div className="relative mb-5">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="flex items-center gap-2 text-base font-medium" style={{color: 'var(--color-text)'}}>
-                    <div className="flex items-center gap-2">
-                      <DocumentTextIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                      <span>{selectedImage ? '编辑描述' : '描述你的创意'}</span>
-                    </div>
-                    {isAuthenticated && (
-                      <div className="flex items-center gap-2 px-3 py-1 rounded-full text-xs" style={{background: 'var(--color-accent-light)', color: 'var(--color-accent)'}}>
-                        <span>消耗 {creditsCost} 积分</span>
-                      </div>
-                    )}
-                  </label>
-                  {isAuthenticated && historyPrompts.length > 0 && !selectedImage && (
-                    <button
-                      onClick={() => setShowHistory(!showHistory)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all text-xs font-medium"
-                      style={{
-                        background: showHistory ? 'var(--color-accent)' : 'transparent',
-                        color: showHistory ? 'white' : 'var(--color-accent)',
-                        border: '1px solid var(--color-accent)'
-                      }}
-                    >
-                      <ClipboardDocumentListIcon className="w-4 h-4" />
-                      {showHistory ? '关闭' : `历史 (${historyPrompts.length})`}
-                    </button>
-                  )}
-                </div>
-                
-                <div className="relative">
-                  <textarea
-                    value={prompt}
-                    onChange={e => setPrompt(e.target.value)}
-                    placeholder={selectedImage ? "描述你想要的效果，例如：将背景改为日落、添加光晕效果..." : "输入你的创意描述，例如：一只可爱的橘猫躺在阳光下的窗台上..."}
-                    className="input resize-none pr-20"
-                    rows={6}
-                    style={{minHeight: '160px', fontSize: '1rem', width: '100%', paddingBottom: '48px'}}
-                  />
-                  <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="p-2.5 rounded-lg transition-all flex items-center gap-2"
-                      style={{
-                        backgroundColor: selectedImage 
-                          ? 'var(--color-accent-light)' 
-                          : 'var(--color-surface)',
-                        border: selectedImage 
-                          ? '1px solid var(--color-accent)' 
-                          : '1px solid var(--color-border)',
-                        color: 'var(--color-accent)'
-                      }}
-                      title={selectedImage ? '已上传图片，点击可重新上传' : '上传图片进行编辑'}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--color-accent)';
-                        e.currentTarget.style.backgroundColor = 'var(--color-accent-light)';
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(139, 115, 85, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = selectedImage ? 'var(--color-accent)' : 'var(--color-border)';
-                        e.currentTarget.style.backgroundColor = selectedImage ? 'var(--color-accent-light)' : 'var(--color-surface)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    >
-                      <UploadIcon className="w-5 h-5" />
-                      <span className="text-xs font-medium" style={{color: selectedImage ? 'var(--color-accent)' : 'var(--color-text-muted)'}}>
-                        {selectedImage ? '已上传' : '上传图片'}
-                      </span>
-                    </button>
-                    {selectedImage && (
-                      <button
-                        onClick={handleClearImage}
-                        className="p-2.5 rounded-lg transition-all flex items-center gap-2"
-                        style={{
-                          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                          border: '1px solid var(--color-danger)',
-                          color: 'var(--color-danger)'
-                        }}
-                        title="移除图片"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                        }}
-                      >
-                        <XCircleIcon className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                
-                {selectedImage && (
-                  <div className="mt-3 p-3 rounded-lg flex items-center gap-3" style={{background: 'var(--color-bg)', border: '1px solid var(--color-accent)'}}>
-                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0" style={{border: '1px solid var(--color-border)'}}>
-                      <img 
-                        src={URL.createObjectURL(selectedImage)}
-                        alt="预览"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate" style={{color: 'var(--color-text)'}}>{selectedImage.name}</p>
-                      <p className="text-xs" style={{color: 'var(--color-text-muted)'}}>{(selectedImage.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                  </div>
-                )}
-                
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileInputChange}
-                  className="hidden"
-                />
-              </div>
+              <label className="flex items-center gap-2 text-sm font-medium mb-4" style={{color: 'var(--color-text)'}}>
+                <AdjustmentsHorizontalIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
+                输出设置
+              </label>
 
-              {showHistory && historyPrompts.length > 0 && (
-                <div className="mb-5 p-5 rounded-xl" style={{background: 'var(--color-bg)', border: '1px solid var(--color-border)'}}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <ClipboardDocumentListIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                    <span className="text-base font-medium" style={{color: 'var(--color-text)'}}>历史提示词</span>
-                  </div>
-                  <div className="space-y-3 max-h-48 overflow-y-auto pr-3">
-                    {historyPrompts.slice(0, 5).map((item, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSelectHistoryPrompt(item)}
-                        className="w-full text-left p-4 rounded-lg transition-all hover:shadow-md group"
-                        style={{background: 'var(--color-surface)', border: '1px solid var(--color-border)'}}
-                      >
-                        <p className="text-sm line-clamp-2" style={{color: 'var(--color-text)'}}>{item.prompt}</p>
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs font-medium mb-2" style={{color: 'var(--color-text-muted)'}}>输出格式</div>
+                  <div className="flex gap-2">
+                    {OUTPUT_FORMAT_OPTIONS.map(opt => (
+                      <button key={opt.value} onClick={() => setOutputFormat(opt.value)}
+                        className={`flex-1 p-2 rounded-lg text-sm transition-all ${outputFormat === opt.value ? 'border-2' : 'hover:border'}`}
+                        style={outputFormat === opt.value ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {border: '1px solid var(--color-border)'}}>
+                        <div className="font-medium">{opt.label}</div>
+                        <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>{opt.desc}</div>
                       </button>
                     ))}
                   </div>
                 </div>
-              )}
 
-              <div className="mb-5 p-5 rounded-xl" style={{background: 'var(--color-bg)', border: '1px solid var(--color-border)'}}>
-                <label className="flex items-center gap-2 text-base font-medium mb-4" style={{color: 'var(--color-text)'}}>
-                  <AdjustmentsHorizontalIcon className="w-6 h-6" style={{color: 'var(--color-accent)'}} />
-                  <span>{selectedImage ? '编辑数量' : '生成数量'}</span>
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {COUNT_OPTIONS.map(num => (
-                    <button key={num} onClick={() => setN(num)}
-                      className="p-3 rounded-xl text-center text-sm transition-all hover:shadow-md"
-                      style={n === num ? {borderColor: 'var(--color-accent)', border: '2px solid', backgroundColor: 'var(--color-accent-light)'} : {backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)'}}>
-                      <div className="font-medium">{num}{selectedImage ? '张' : '张'}</div>
-                    </button>
-                  ))}
-                </div>
-                {selectedImage && (
-                  <p className="mt-2 text-xs" style={{color: 'var(--color-text-muted)'}}>
-                    每次编辑消耗 {creditsCost} 积分
-                  </p>
+                {outputFormat === 'jpeg' && (
+                  <div>
+                    <div className="flex items-center justify-between text-xs mb-2" style={{color: 'var(--color-text-muted)'}}>
+                      <span>压缩等级</span>
+                      <span>{outputCompression}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value={outputCompression}
+                      onChange={(e) => setOutputCompression(Number(e.target.value))}
+                      className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                      style={{background: 'var(--color-border)'}} />
+                  </div>
                 )}
-              </div>
 
-              <div>
-                <label className="flex items-center gap-2 text-base font-medium mb-4" style={{color: 'var(--color-text)'}}>
-                  <SparklesIcon className="w-6 h-6" style={{color: 'var(--color-accent)'}} />
-                  <span>艺术风格</span>
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {STYLE_PRESETS.slice(0, 6).map(style => (
-                    <button
-                      key={style.name}
-                      onClick={() => setSelectedStyle(prev => prev === style.name ? '' : style.name)}
-                      className={`filter-tag text-sm px-4 py-2.5 rounded-lg ${selectedStyle === style.name ? 'filter-tag-active' : ''}`}
-                    >
-                      <span className="text-base">{style.icon}</span>
-                      <span>{style.name}</span>
-                    </button>
-                  ))}
+                {outputFormat === 'png' && (
+                  <div>
+                    <div className="text-xs font-medium mb-2" style={{color: 'var(--color-text-muted)'}}>背景设置</div>
+                    <div className="space-y-1">
+                      {BACKGROUND_OPTIONS.map(opt => (
+                        <button key={opt.value} onClick={() => setBackground(opt.value)}
+                          className={`w-full p-2 rounded-lg text-left text-xs transition-all ${background === opt.value ? 'border-2' : 'hover:border'}`}
+                          style={background === opt.value ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {border: '1px solid var(--color-border)'}}>
+                          <div className="font-medium">{opt.label}</div>
+                          <div style={{color: 'var(--color-text-muted)'}}>{opt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <div className="text-xs font-medium mb-2" style={{color: 'var(--color-text-muted)'}}>内容审核</div>
+                  <div className="space-y-1">
+                    {MODERATION_OPTIONS.map(opt => (
+                      <button key={opt.value} onClick={() => setModeration(opt.value)}
+                        className={`w-full p-2 rounded-lg text-left text-xs transition-all ${moderation === opt.value ? 'border-2' : 'hover:border'}`}
+                        style={moderation === opt.value ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {border: '1px solid var(--color-border)'}}>
+                        <div className="font-medium">{opt.label}</div>
+                        <div style={{color: 'var(--color-text-muted)'}}>{opt.desc}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="card-elevated p-6 rounded-2xl">
+              <label className="flex items-center gap-2 text-sm font-medium mb-5" style={{color: 'var(--color-text)'}}>
+                <SparklesIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
+                生成数量
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {COUNT_OPTIONS.map(opt => (
+                  <button key={opt} onClick={() => setN(opt)}
+                    className={n === opt ? 'filter-tag filter-tag-active' : 'filter-tag'}>
+                    {opt} 张
+                  </button>
+                ))}
               </div>
             </div>
 
             <button
               onClick={handleSubmit}
-              disabled={showFeedback || !prompt.trim() || !isAuthenticated}
-              className={`btn w-full text-lg py-5 rounded-xl ${prompt.trim() && isAuthenticated && !showFeedback ? 'btn-primary' : 'opacity-50 cursor-not-allowed'}`}
+              disabled={!prompt.trim() || !isAuthenticated}
+              className="btn btn-primary w-full py-4 text-lg"
+              style={{background: 'var(--gradient-primary)'}}
             >
-              {showFeedback ? (
-                <>
-                  <ArrowPathIcon className="w-6 h-6 animate-spin" />
-                  {selectedImage ? '编辑中...' : '生成中...'}
-                </>
-              ) : !isAuthenticated ? (
-                '请先登录'
-              ) : prompt.trim() ? (
-                <>
-                  <SparklesIcon className="w-6 h-6" />
-                  {selectedImage ? '开始编辑' : '开始生成'} · {creditsCost} 积分
-                </>
-              ) : (
-                '请输入描述'
-              )}
+              <SparklesIcon className="w-6 h-6 mr-2" />
+              生成图片 ({creditsCost} 积分)
             </button>
           </div>
-        </div>
 
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="card-elevated p-8 rounded-2xl text-center hover:shadow-xl transition-all hover:-translate-y-2">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{background: 'linear-gradient(135deg, #8B7355 0%, #A08060 100%)'}}>
-              <SparklesIcon className="w-8 h-8 text-white" />
+          <div className="lg:col-span-8">
+            <div className="card-elevated p-8 rounded-2xl min-h-[600px]">
+              <div className="relative mb-6">
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="描述你想要生成的图片...&#10;&#10;例如：一只橙色虎斑猫坐在花园里，阳光透过树叶洒落"
+                  className="w-full h-48 p-4 rounded-xl text-lg resize-none focus:outline-none focus:ring-2 focus:ring-2"
+                  style={{
+                    backgroundColor: 'var(--color-bg)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text)',
+                    '--tw-ring-color': 'var(--color-accent)'
+                  } as React.CSSProperties}
+                />
+
+                <div className="absolute bottom-4 right-4 flex gap-2">
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="p-2 rounded-lg hover:bg-[color:var(--color-accent-light)] transition-colors"
+                    style={{color: 'var(--color-text-muted)'}}
+                    title="历史提示词"
+                  >
+                    <ClipboardDocumentListIcon className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setShowAdvanced(!showAdvanced)}
+                    className="p-2 rounded-lg hover:bg-[color:var(--color-accent-light)] transition-colors"
+                    style={{color: 'var(--color-text-muted)'}}
+                    title="高级选项"
+                  >
+                    <AdjustmentsHorizontalIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {showHistory && (
+                <div className="mb-6 p-4 rounded-xl animate-fade-in" style={{background: 'var(--color-surface)'}}>
+                  <div className="text-sm font-medium mb-3" style={{color: 'var(--color-text)'}}>历史提示词</div>
+                  {historyPrompts.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {historyPrompts.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleSelectHistoryPrompt(item)}
+                          className="badge badge-secondary truncate max-w-[200px]"
+                          title={item.prompt}
+                        >
+                          {item.prompt.slice(0, 30)}...
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>暂无历史记录</div>
+                  )}
+                </div>
+              )}
+
+              {prompt && (
+                <div className="mb-6 flex flex-wrap gap-2">
+                  <div className="text-sm font-medium" style={{color: 'var(--color-text-muted)'}}>风格：</div>
+                  {STYLE_PRESETS.map(opt => (
+                    <button
+                      key={opt.name}
+                      onClick={() => setSelectedStyle(selectedStyle === opt.name ? '' : opt.name)}
+                      className={`filter-tag ${selectedStyle === opt.name ? 'filter-tag-active' : ''}`}
+                    >
+                      <span className="mr-1">{opt.icon}</span>
+                      {opt.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 mb-6" style={{color: 'var(--color-text-muted)'}}>
+                <DocumentTextIcon className="w-5 h-5" />
+                <span className="text-sm">提示词指南</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="p-5 rounded-xl" style={{background: 'var(--color-surface)'}}>
+                  <div className="text-base font-medium mb-3" style={{color: 'var(--color-text)'}}>推荐写法</div>
+                  <div className="space-y-2">
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✓ 具体描述主体、场景、动作</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✓ 添加风格关键词（摄影/油画/动漫）</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✓ 说明光线、色彩、氛围</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✓ 使用英文关键词效果更佳</div>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-xl" style={{background: 'var(--color-surface)'}}>
+                  <div className="text-base font-medium mb-3" style={{color: 'var(--color-text)'}}>避免写法</div>
+                  <div className="space-y-2">
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✗ 过于简单或模糊的描述</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✗ 包含多个相互冲突的指令</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✗ 要求生成文字或特定品牌</div>
+                    <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>✗ 提及真实人物姓名</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-xl" style={{background: 'var(--color-accent-light)'}}>
+                <div className="flex items-start gap-3">
+                  <SparklesIcon className="w-6 h-6 mt-1" style={{color: 'var(--color-accent)'}} />
+                  <div>
+                    <div className="text-base font-medium mb-2" style={{color: 'var(--color-text)'}}>
+                      当前设置预览
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>尺寸</div>
+                        <div className="font-medium" style={{color: 'var(--color-text)'}}>
+                          {formatInfo?.label} ({formatInfo?.pixels})
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>质量</div>
+                        <div className="font-medium" style={{color: 'var(--color-text)'}}>
+                          {QUALITY_OPTIONS.find(q => q.value === quality)?.label}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>格式</div>
+                        <div className="font-medium" style={{color: 'var(--color-text)'}}>
+                          {outputFormat.toUpperCase()}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>数量</div>
+                        <div className="font-medium" style={{color: 'var(--color-text)'}}>{n} 张</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t" style={{borderColor: 'var(--color-border)'}}>
+                      <div className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+                        预计消耗：<span className="font-bold" style={{color: 'var(--color-accent)'}}>{creditsCost} 积分</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="font-bold text-xl mb-3" style={{color: 'var(--color-text)'}}>AI智能生成</h3>
-            <p className="text-base" style={{color: 'var(--color-text-muted)'}}>输入描述，AI自动创作</p>
-          </div>
-          <div className="card-elevated p-8 rounded-2xl text-center hover:shadow-xl transition-all hover:-translate-y-2">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{background: 'linear-gradient(135deg, #8B7355 0%, #A08060 100%)'}}>
-              <PhotoIcon className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-bold text-xl mb-3" style={{color: 'var(--color-text)'}}>多种尺寸</h3>
-            <p className="text-base" style={{color: 'var(--color-text-muted)'}}>支持多种比例</p>
-          </div>
-          <div className="card-elevated p-8 rounded-2xl text-center hover:shadow-xl transition-all hover:-translate-y-2">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{background: 'linear-gradient(135deg, #8B7355 0%, #A08060 100%)'}}>
-              <SparklesIcon className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-bold text-xl mb-3" style={{color: 'var(--color-text)'}}>高清输出</h3>
-            <p className="text-base" style={{color: 'var(--color-text-muted)'}}>高质量图像输出</p>
           </div>
         </div>
       </main>

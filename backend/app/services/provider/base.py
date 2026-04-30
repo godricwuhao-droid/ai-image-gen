@@ -1,13 +1,35 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 
 class GenerateRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(..., description="文本提示词，最大 32000 字符")
     size: str = "1024x1024"
-    quality: str = "standard"
-    n: int = 1
+    quality: str = "medium"
+    n: int = Field(default=1, ge=1, le=10)
+    background: str = "auto"
+    moderation: str = "auto"
+    output_format: str = "png"
+    output_compression: Optional[int] = Field(default=None, ge=0, le=100)
+
+    class Config:
+        from_attributes = True
+
+
+class ImageEditRequest(BaseModel):
+    image: str = Field(..., description="要编辑的图片（URL/base64）")
+    mask: Optional[str] = Field(None, description="遮罩图片（PNG 格式，带 alpha 通道）")
+    prompt: str = Field(..., description="文本提示词，最大 32000 字符")
+    size: str = "1024x1024"
+    quality: str = "low"
+    n: int = Field(default=1, ge=1, le=10)
+    background: str = "auto"
+    output_format: str = "png"
+    output_compression: Optional[int] = Field(default=None, ge=0, le=100)
+
+    class Config:
+        from_attributes = True
 
 
 class GenerateResponse(BaseModel):
@@ -21,6 +43,10 @@ class BaseProvider(ABC):
 
     @abstractmethod
     async def generate(self, req: GenerateRequest) -> GenerateResponse:
+        pass
+
+    @abstractmethod
+    async def image_edit(self, req: ImageEditRequest) -> GenerateResponse:
         pass
 
     @abstractmethod
