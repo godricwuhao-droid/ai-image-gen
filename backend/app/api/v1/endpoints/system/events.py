@@ -35,10 +35,20 @@ async def sse_generation_status(
     Client can subscribe to this endpoint to receive real-time updates
     when the generation is complete.
     """
+    user_id = 0
+    if token:
+        try:
+            from ....core.security import decode_access_token
+            payload = decode_access_token(token)
+            if payload:
+                user_id = int(payload.get("sub", 0))
+        except Exception:
+            pass
+    
     async def generate():
         max_attempts = 120
         for _ in range(max_attempts):
-            event_key = f"0_{generation_id}"
+            event_key = f"{user_id}_{generation_id}"
             if event_key in generation_complete_events:
                 event_data = generation_complete_events.pop(event_key)
                 yield f"data: {json.dumps(event_data)}\n\n"

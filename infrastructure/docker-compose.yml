@@ -65,7 +65,7 @@ services:
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
       - RELAY_API_KEY=${RELAY_API_KEY:-sk-your-api-key-here}
-      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai/v3}
+      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai}
       - OPENAI_BASE_URL=https://api.openai.com
       - DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen?charset=utf8mb4
       - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
@@ -95,7 +95,7 @@ services:
       context: ../backend
       dockerfile: Dockerfile
     container_name: ai_image_celery_worker
-    command: celery -A app.tasks worker -l info
+    command: celery -A app.tasks worker --logfile=-
     environment:
       - DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen?charset=utf8mb4
       - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
@@ -110,7 +110,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
       - RELAY_API_KEY=${RELAY_API_KEY:-sk-your-api-key-here}
-      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai/v3}
+      - RELAY_API_BASE_URL=${RELAY_API_BASE_URL:-https://api.jiekou.ai}
       - OPENAI_BASE_URL=https://api.openai.com
     depends_on:
       mysql:

@@ -191,7 +191,7 @@ async def create_generation(
     else:
         provider_name = "relay_api"
     
-    credits_needed = calculate_credits_cost(request.quality, request.n)
+    credits_needed = calculate_credits_cost(request.quality, request.size, request.n)
     is_free_generation = False
     
     if not current_user.is_superuser:
@@ -298,7 +298,7 @@ async def refund_generation(
     if generation.refunded:
         return {"refunded": False, "message": "Already refunded"}
     
-    credits_cost = calculate_credits_cost(generation.quality, generation.n)
+    credits_cost = calculate_credits_cost(generation.quality, generation.size, generation.n)
     
     current_user.credits = (current_user.credits or 0) + credits_cost
     generation.refunded = True

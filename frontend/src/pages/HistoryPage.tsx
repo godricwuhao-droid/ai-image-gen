@@ -29,16 +29,31 @@ export const HistoryPage: React.FC = () => {
   const [selectedGeneration, setSelectedGeneration] = useState<any>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState<number | null>(null);
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    fetchGenerations();
-  }, []);
+    fetchGenerationsWithPage(currentPage);
+  }, [currentPage]);
+
+  const fetchGenerationsWithPage = async (page: number) => {
+    try {
+      const data = await generationService.list(page);
+      fetchGenerations(page);
+      setTotalCount(data.total || 0);
+      setTotalPages(Math.ceil((data.total || 0) / 20) || 1);
+    } catch (error) {
+      console.error('Failed to fetch generations:', error);
+    }
+  };
 
   const handleDelete = async (id: number) => {
     if (window.confirm('确定要删除吗?')) {
       try {
         await deleteGeneration(id);
         toast.success('删除成功');
+        fetchGenerationsWithPage(currentPage);
       } catch (error) {
         toast.error('删除失败');
       }
@@ -206,6 +221,28 @@ export const HistoryPage: React.FC = () => {
           </button>
         </div>
 
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="btn btn-secondary px-4 py-2"
+            >
+              上一页
+            </button>
+            <span className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+              第 {currentPage} / {totalPages} 页，共 {totalCount} 条
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="btn btn-secondary px-4 py-2"
+            >
+              下一页
+            </button>
+          </div>
+        )}
+
         {!generations || generations.length === 0 ? (
           <div className="text-center py-20 card-elevated p-12">
             <SparklesIcon className="w-16 h-16 mx-auto mb-4" style={{color: 'var(--color-accent)'}} />
@@ -224,15 +261,19 @@ export const HistoryPage: React.FC = () => {
               const imageUrl = getImageUrl(gen.images);
               return (
                 <div key={gen.id} className="card hover-lift overflow-hidden">
-                  {imageUrl && (
-                    <div 
+                  {imageUrls.length > 0 ? (
+                    <div
                       className="relative cursor-pointer group"
                       onClick={() => setSelectedGeneration(gen)}
                     >
                       <img
-                        src={imageUrl}
+                        src={imageUrl || ''}
                         alt="Generated"
                         className="w-full aspect-[3/4] object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          console.log('图片加载失败:', imageUrl);
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -268,6 +309,10 @@ export const HistoryPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="w-full aspect-[3/4] flex items-center justify-center" style={{backgroundColor: 'var(--color-surface)'}}>
+                      <span style={{color: 'var(--color-text-muted)'}}>图片加载失败</span>
                     </div>
                   )}
                   
@@ -453,14 +498,17 @@ export const HistoryPage: React.FC = () => {
                 <div className="space-y-6">
                   {getImageUrls(selectedGeneration.images).map((img, idx) => (
                     <div key={idx} className="rounded-2xl overflow-hidden shadow-lg">
-                      <img 
-                        src={img.url} 
+                      <img
+                        src={img.url}
                         alt="Generated"
                         style={{
                           width: '100%',
                           maxHeight: '60vh',
                           objectFit: 'contain',
                           background: 'var(--color-bg)'
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
                         }}
                       />
                       <div className="flex items-center justify-between p-4" style={{backgroundColor: 'var(--color-surface)'}}>

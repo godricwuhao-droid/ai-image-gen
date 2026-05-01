@@ -92,7 +92,6 @@ export const ImageEditPage = () => {
   const [size, setSize] = useState('1024x1024');
   const [quality, setQuality] = useState('medium');
   const [outputFormat, setOutputFormat] = useState('png');
-  const [outputCompression, setOutputCompression] = useState(80);
   const [background, setBackground] = useState('auto');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState<GenerationStatus | null>(null);
@@ -332,7 +331,7 @@ export const ImageEditPage = () => {
     }
 
     try {
-      const response = await api.post('/image-edit', formData);
+      const response = await api.post('/image-to-image', formData);
 
       const generationId = response.data.id;
       setCurrentGeneration({
@@ -362,8 +361,6 @@ export const ImageEditPage = () => {
     link.click();
     toast.success('图片下载成功');
   };
-
-  const formatInfo = SIZE_OPTIONS.find(s => s.value === size);
 
   return (
     <div className="page-container">

@@ -115,8 +115,12 @@ class MinioService:
             )
         return self.client
 
-    async def upload_from_url(self, url: str, object_name: str) -> str:
-        """Download image from URL and upload to MinIO"""
+    async def upload_from_url(self, url: str, object_name: str) -> tuple[str, bool]:
+        """Download image from URL and upload to MinIO
+        
+        Returns:
+            tuple: (saved_url, success_flag)
+        """
         try:
             client = self.get_client()
 
@@ -130,8 +134,8 @@ class MinioService:
             async with httpx.AsyncClient(timeout=60) as http_client:
                 response = await http_client.get(url)
                 if response.status_code != 200:
-                    logger.warning(f"Failed to download image: {response.status_code}, using original URL")
-                    return url
+                    logger.error(f"[MinIO] 下载图片失败: HTTP {response.status_code}, URL={url[:100]}...")
+                    return url, False
 
                 image_data = response.content
                 content_type = response.headers.get("content-type", "image/png")
@@ -147,10 +151,10 @@ class MinioService:
 
             saved_url = f"{self.public_url}/{self.bucket}/{object_name}"
             logger.info(f"[MinIO] 图片已保存: {saved_url}")
-            return saved_url
+            return saved_url, True
         except Exception as e:
-            logger.error(f"[MinIO] 上传失败: {e}")
-            return url
+            logger.error(f"[MinIO] 上传失败: {e}, URL={url[:100]}...")
+            return url, False
 
 
 minio_service = MinioService()
@@ -187,17 +191,18 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                 logger.info(f"[Celery] API响应成功, images count={len(response.images)}")
 
                 images = []
+                upload_failures = 0
                 for i, img_data in enumerate(response.images):
                     original_url = img_data.get("url")
                     if original_url:
                         object_name = f"generations/{generation.id}/{datetime.now().strftime('%Y%m%d%H%M%S')}_{i}.png"
-                        try:
-                            saved_url = await minio_service.upload_from_url(original_url, object_name)
-                            img_data["url"] = saved_url
-                            logger.info(f"[Celery] 图片{i+1}已处理: {saved_url}")
-                        except Exception as e:
-                            logger.warning(f"[Celery] 图片保存失败: {e}")
-                            img_data["url"] = original_url
+                        saved_url, success = await minio_service.upload_from_url(original_url, object_name)
+                        img_data["url"] = saved_url
+                        if success:
+                            logger.info(f"[Celery] 图片{i+1}已保存: {saved_url}")
+                        else:
+                            upload_failures += 1
+                            logger.warning(f"[Celery] 图片{i+1}保存失败，使用原URL: {original_url[:50]}...")
 
                     images.append(img_data)
 
@@ -212,7 +217,7 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                 logger.info(f"[Celery] 生成完成, generation_id={generation_id}, status=completed, credits_cost={credits_cost}")
 
                 try:
-                    from app.api.v1.endpoints.events import notify_generation_complete
+                    from app.api.v1.endpoints.system.events import notify_generation_complete
                     notify_generation_complete(
                         user_id=user_id,
                         generation_id=generation_id,
@@ -276,7 +281,7 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                     logger.warning(f"[Celery] 无需返还积分: credits_cost={credits_cost}")
 
                 try:
-                    from app.api.v1.endpoints.events import notify_generation_complete
+                    from app.api.v1.endpoints.system.events import notify_generation_complete
                     notify_generation_complete(
                         user_id=user_id,
                         generation_id=generation_id,

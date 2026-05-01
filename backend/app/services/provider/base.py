@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Union
 
 
 class GenerateRequest(BaseModel):
@@ -12,6 +12,7 @@ class GenerateRequest(BaseModel):
     moderation: str = "auto"
     output_format: str = "png"
     output_compression: Optional[int] = Field(default=None, ge=0, le=100)
+    image_url: Optional[Union[str, List[str]]] = Field(default=None, description="图片URL或base64，或图片数组")
 
     class Config:
         from_attributes = True
@@ -45,9 +46,9 @@ class BaseProvider(ABC):
     async def generate(self, req: GenerateRequest) -> GenerateResponse:
         pass
 
-    @abstractmethod
     async def image_edit(self, req: ImageEditRequest) -> GenerateResponse:
-        pass
+        """Optional method for image editing - override in subclass if supported"""
+        raise NotImplementedError("Image edit not supported by this provider")
 
     @abstractmethod
     async def health_check(self) -> bool:

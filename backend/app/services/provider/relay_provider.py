@@ -117,7 +117,7 @@ def parse_error_response(response_text: str, status_code: int) -> str:
 class RelayAPIProvider(BaseProvider):
     """Image generation provider using relay API"""
 
-    BASE_URL = os.getenv("RELAY_API_BASE_URL", "https://api.jiekou.ai/v3")
+    BASE_URL = os.getenv("RELAY_API_BASE_URL", "https://api.jiekou.ai")
 
     def __init__(self):
         self.api_key = os.getenv("RELAY_API_KEY") or os.getenv("OPENAI_API_KEY")
@@ -180,13 +180,19 @@ class RelayAPIProvider(BaseProvider):
 
         logger.info(f"[RelayAPI] 请求参数: {payload}")
 
+        logger.info(f"[RelayAPI] 请求头: {headers}")
+
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.BASE_URL}/v1/images/generations",
+                    f"{self.BASE_URL}/v3/gpt-image-2-text-to-image",
                     headers=headers,
                     json=payload
                 )
+
+                logger.info(f"[RelayAPI] 响应状态: {response.status_code}")
+                logger.info(f"[RelayAPI] 响应头: {dict(response.headers)}")
+                logger.info(f"[RelayAPI] 响应内容: {response.text}")
 
                 if response.status_code != 200:
                     user_message = parse_error_response(response.text, response.status_code)
@@ -251,9 +257,8 @@ class RelayAPIProvider(BaseProvider):
         }
 
         payload = {
-            "image": req.image,
+            "image": req.image,  # 支持 string | string[]
             "prompt": req.prompt,
-            "n": req.n,
             "size": api_size,
             "quality": api_quality,
             "background": req.background,
@@ -271,7 +276,7 @@ class RelayAPIProvider(BaseProvider):
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.BASE_URL}/v1/images/edits",
+                    f"{self.BASE_URL}/v3/gpt-image-2-edit",
                     headers=headers,
                     json=payload
                 )
@@ -316,3 +321,103 @@ class RelayAPIProvider(BaseProvider):
         except httpx.HTTPError as e:
             logger.error(f"[RelayAPI-ImageEdit] HTTP error: {e}")
             raise ValueError(f"Request failed: {str(e)}")
+
+
+class ImageToImageProvider(BaseProvider):
+    """Image to Image generation using relay API (for future extension)"""
+
+    BASE_URL = os.getenv("RELAY_API_BASE_URL", "https://api.jiekou.ai")
+
+    def __init__(self):
+        self.api_key = os.getenv("RELAY_API_KEY") or os.getenv("OPENAI_API_KEY")
+        self.timeout = 300
+
+    async def health_check(self) -> bool:
+        if not self.api_key:
+            return False
+        try:
+            async with httpx.AsyncClient(timeout=10) as client:
+                response = await client.get(
+                    f"{self.BASE_URL}/health",
+                    headers={"Authorization": f"Bearer {self.api_key}"}
+                )
+                return response.status_code == 200
+        except Exception:
+            return False
+
+    async def generate(self, req: GenerateRequest) -> GenerateResponse:
+        if not self.api_key:
+            raise ValueError("RELAY_API_KEY not configured")
+
+        api_quality = normalize_quality(req.quality)
+        api_size = normalize_size(req.size)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        output_format = getattr(req, 'output_format', 'png')
+        
+        payload = {
+            "prompt": req.prompt,
+            "image": getattr(req, 'image_url', ''),
+            "n": req.n,
+            "size": api_size,
+            "quality": api_quality,
+            "output_format": output_format
+        }
+        
+        image_list = getattr(req, 'image_url', None)
+        image_count = len(image_list) if isinstance(image_list, list) else 1
+        logger.info(f"[ImageToImage] 请求参数: prompt={req.prompt[:50]}..., size={api_size}, quality={api_quality}, 图片数量={image_count}")
+
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(
+                    f"{self.BASE_URL}/v3/gpt-image-2-edit",
+                    headers=headers,
+                    json=payload
+                )
+
+                if response.status_code != 200:
+                    user_message = parse_error_response(response.text, response.status_code)
+                    logger.error(f"[ImageToImage] 生成失败: {user_message}")
+                    raise ValueError(user_message)
+
+                data = response.json()
+                logger.info(f"[ImageToImage] 响应数据: {data}")
+
+                images = []
+                if "data" in data:
+                    for item in data["data"]:
+                        if "url" in item:
+                            images.append({
+                                "url": item["url"],
+                                "width": item.get("width", 1024),
+                                "height": item.get("height", 1024)
+                            })
+                elif "images" in data:
+                    for url in data["images"]:
+                        if isinstance(url, str):
+                            images.append({
+                                "url": url,
+                                "width": 1024,
+                                "height": 1024
+                            })
+
+                return GenerateResponse(
+                    images=images,
+                    cost_usd=data.get("cost_usd", 0.0),
+                    provider="relay_api_image2image"
+                )
+
+        except httpx.TimeoutException:
+            logger.error("[ImageToImage] 请求超时")
+            raise ValueError("Request timeout, please try again")
+        except httpx.HTTPError as e:
+            logger.error(f"[ImageToImage] HTTP error: {e}")
+            raise ValueError(f"Request failed: {str(e)}")
+
+    async def image_edit(self, req: ImageEditRequest) -> GenerateResponse:
+        raise NotImplementedError("Use RelayAPIProvider.image_edit instead")

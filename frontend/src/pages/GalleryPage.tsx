@@ -29,6 +29,9 @@ export const GalleryPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchFavorites = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -41,15 +44,18 @@ export const GalleryPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const fetchGalleries = useCallback(async () => {
+  const fetchGalleries = useCallback(async (page: number = 1) => {
     try {
       setLoading(true);
-      const data = await galleryService.getList(1, 50, selectedSort);
+      const data = await galleryService.getList(page, 20, selectedSort);
       const localImages = data.images.filter(img => {
         const url = img.images?.[0]?.url || '';
         return !url.includes('unsplash.com') && !url.includes('images.unsplash.com');
       });
       setImages(localImages);
+      setTotalCount(data.total || 0);
+      setTotalPages(Math.ceil((data.total || 0) / 20) || 1);
+      setCurrentPage(page);
     } catch (error) {
       toast.error('加载画廊失败');
     } finally {
@@ -58,9 +64,9 @@ export const GalleryPage: React.FC = () => {
   }, [selectedSort]);
 
   useEffect(() => {
-    fetchGalleries();
+    fetchGalleries(currentPage);
     fetchFavorites();
-  }, [selectedSort, fetchGalleries, fetchFavorites]);
+  }, [selectedSort, currentPage, fetchGalleries, fetchFavorites]);
 
   const handleLike = async (_imageId: number) => {
     if (!isAuthenticated) {
@@ -172,6 +178,28 @@ export const GalleryPage: React.FC = () => {
           })}
         </div>
 
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="btn btn-secondary px-4 py-2"
+            >
+              上一页
+            </button>
+            <span className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+              第 {currentPage} / {totalPages} 页，共 {totalCount} 条
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="btn btn-secondary px-4 py-2"
+            >
+              下一页
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64">
             <div className="w-16 h-16 rounded-full animate-spin" style={{borderColor: 'var(--color-border)', borderTopColor: 'var(--color-accent)', borderWidth: '4px'}}></div>
@@ -204,12 +232,19 @@ export const GalleryPage: React.FC = () => {
                   >
                     <div className="relative aspect-[3/4] overflow-hidden">
                       {image.images && image.images[0]?.url ? (
-                        <img
-                          src={image.images[0].url}
-                          alt={image.prompt}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
-                        />
+                        <>
+                          <img
+                            src={image.images[0].url}
+                            alt={image.prompt}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          {image.images.length > 1 && (
+                            <div className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium" style={{background: 'rgba(0,0,0,0.6)', color: 'white'}}>
+                              {image.images.length}张
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center" style={{background: 'var(--color-border-subtle)'}}>
                           <span style={{color: 'var(--color-text-subtle)'}}>无图片</span>
@@ -322,14 +357,22 @@ export const GalleryPage: React.FC = () => {
             <div className="overflow-y-auto" style={{maxHeight: '75vh'}}>
               <div className="p-8">
                 <div className="space-y-6">
-                  {selectedImage.images && selectedImage.images[0]?.url && (
-                    <div className="image-container shadow-lg">
-                      <img 
-                        src={selectedImage.images[0].url}
-                        alt={selectedImage.prompt}
-                        className="w-full h-auto"
-                        style={{maxHeight: '60vh', objectFit: 'contain', background: 'var(--color-bg)'}}
-                      />
+                  {selectedImage.images && selectedImage.images.length > 0 ? (
+                    <div className="space-y-4">
+                      {selectedImage.images.map((img: any, idx: number) => (
+                        <div key={idx} className="image-container shadow-lg">
+                          <img
+                            src={img.url}
+                            alt={selectedImage.prompt}
+                            className="w-full h-auto"
+                            style={{maxHeight: '60vh', objectFit: 'contain', background: 'var(--color-bg)'}}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="w-full h-64 flex items-center justify-center" style={{background: 'var(--color-bg)'}}>
+                      <span style={{color: 'var(--color-text-muted)'}}>无图片</span>
                     </div>
                   )}
                   
