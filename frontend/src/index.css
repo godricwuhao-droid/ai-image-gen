@@ -148,6 +148,17 @@ body {
     transform: translateY(-2px);
     border-color: var(--color-border-subtle);
   }
+
+  .card--mine {
+    border: 1.5px solid var(--color-accent);
+    background: linear-gradient(135deg, var(--color-accent-light), var(--color-surface));
+  }
+
+  .badge--mine {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
   
   .card-elevated {
     @apply rounded-2xl shadow-lg;

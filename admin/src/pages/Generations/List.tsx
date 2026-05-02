@@ -1,10 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Table, Button, Space, Tag, Modal, message, Popconfirm, Input, Select, DatePicker } from 'antd';
 import { DeleteOutlined, ReloadOutlined, EyeOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { generationService, Generation } from '../../services/api';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+
+// Relay API 价格表 (USD/次) - 根据 docs/价格清单.md
+const PRICE_TABLE: Record<string, Record<string, number>> = {
+  low: {
+    '1024x1024': 0.0060,
+    '1024x1536': 0.0050,
+    '1536x1024': 0.0050,
+    '2048x2048': 0.0119,
+    '2048x1152': 0.0047,
+    '3840x2160': 0.0111,
+    '2160x3840': 0.0111,
+  },
+  medium: {
+    '1024x1024': 0.0530,
+    '1024x1536': 0.0410,
+    '1536x1024': 0.0410,
+    '2048x2048': 0.1070,
+    '2048x1152': 0.0424,
+    '3840x2160': 0.1001,
+    '2160x3840': 0.1001,
+  },
+  high: {
+    '1024x1024': 0.2110,
+    '1024x1536': 0.1650,
+    '1536x1024': 0.1650,
+    '2048x2048': 0.4282,
+    '2048x1152': 0.1695,
+    '3840x2160': 0.4003,
+    '2160x3840': 0.4003,
+  },
+};
+
+// 根据质量、尺寸和数量计算费用
+const calculateCost = (quality: string, size: string, n: number = 1): number => {
+  const normalizedQuality = quality?.toLowerCase() || 'medium';
+  const priceMap = PRICE_TABLE[normalizedQuality] || PRICE_TABLE.medium;
+  const pricePerImage = priceMap[size] || priceMap['1024x1024'] || 0.0530;
+  return pricePerImage * n;
+};
 
 const GenerationsList: React.FC = () => {
   const [generations, setGenerations] = useState<Generation[]>([]);
@@ -92,12 +131,16 @@ const GenerationsList: React.FC = () => {
       openai: '#10a37f',
       relay: '#6366f1',
       relay_api: '#8b5cf6',
+      relay_api_image_edit: '#ec4899',
+      relay_api_image2image: '#f59e0b',
       image_edit: '#ec4899',
     };
     const textMap: Record<string, string> = {
       openai: 'OpenAI',
       relay: 'Relay',
       relay_api: 'Relay API',
+      relay_api_image_edit: 'Relay 图片编辑',
+      relay_api_image2image: 'Relay 图生图',
       image_edit: 'Image Edit',
     };
     return <Tag color={colorMap[provider] || 'default'}>{textMap[provider] || provider}</Tag>;
@@ -150,8 +193,12 @@ const GenerationsList: React.FC = () => {
       title: '费用(USD)',
       dataIndex: 'cost_usd',
       key: 'cost_usd',
-      width: 100,
-      render: (cost: number) => `$${cost?.toFixed(4) || '0.0000'}`,
+      width: 120,
+      render: (_cost: number, record: Generation) => {
+        // 优先使用后端返回的费用，如果为0则根据价格表计算
+        const displayCost = _cost && _cost > 0 ? _cost : calculateCost(record.quality, record.size, record.n);
+        return <span>${displayCost.toFixed(4)}</span>;
+      },
     },
     {
       title: '时间',
@@ -301,7 +348,7 @@ const GenerationsList: React.FC = () => {
               <li>供应商：{selectedGeneration.provider}</li>
             </ul>
             <p><strong>状态：</strong>{getStatusTag(selectedGeneration.status)}</p>
-            <p><strong>费用：</strong>${selectedGeneration.cost_usd?.toFixed(4)}</p>
+            <p><strong>费用：</strong>${(() => selectedGeneration.cost_usd && selectedGeneration.cost_usd > 0 ? selectedGeneration.cost_usd : calculateCost(selectedGeneration.quality, selectedGeneration.size, selectedGeneration.n)).toFixed(4)}</p>
             <p><strong>积分：</strong>{selectedGeneration.credits_cost}</p>
             <p><strong>点赞数：</strong>{selectedGeneration.likes_count}</p>
             <p><strong>浏览数：</strong>{selectedGeneration.views_count}</p>

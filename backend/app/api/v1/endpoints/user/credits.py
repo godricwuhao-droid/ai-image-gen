@@ -6,7 +6,7 @@ import logging
 from .....core.database import get_db
 from .....models.user import User
 from .....models.credit_transaction import CreditTransaction
-from ....deps import get_current_user
+from ....deps import get_current_user, get_admin_user
 
 router = APIRouter(prefix="/credits", tags=["Credits"])
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ async def add_credits(
 @router.post("/deduct", response_model=CreditsResponse)
 async def deduct_credits(
     request: AddCreditsRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     current_credits = current_user.credits or 0

@@ -15,7 +15,7 @@ def process_image_edit(generation_id: int, user_id: int, prompt: str, images_bas
     from app.models.credit_transaction import CreditTransaction
     from app.services.provider.relay_provider import ImageToImageProvider
     from app.services.provider.base import GenerateRequest
-    from app.tasks.generate_image import minio_service, calculate_credits_cost
+    from app.tasks.generate_image import minio_service, calculate_credits_cost, calculate_credits_cost_from_db
     from app.api.v1.endpoints.system.events import notify_generation_complete
     import uuid
     from datetime import datetime
@@ -73,7 +73,7 @@ def process_image_edit(generation_id: int, user_id: int, prompt: str, images_bas
                 if upload_failures > 0:
                     logger.warning(f"[Celery] 共{upload_failures}张图片上传失败")
                 
-                credits_cost = generation.credits_cost or calculate_credits_cost(quality, size, 1)
+                credits_cost = generation.credits_cost or await calculate_credits_cost_from_db(quality, size, 1, db)
                 generation.images = saved_images
                 generation.credits_cost = credits_cost
                 generation.status = "completed"
@@ -97,7 +97,7 @@ def process_image_edit(generation_id: int, user_id: int, prompt: str, images_bas
                 generation.error_message = str(e)
                 await db.commit()
                 
-                credits_cost = generation.credits_cost or calculate_credits_cost(quality, size, 1)
+                credits_cost = generation.credits_cost or await calculate_credits_cost_from_db(quality, size, 1, db)
                 
                 if credits_cost > 0 and not generation.refunded:
                     await db.execute(

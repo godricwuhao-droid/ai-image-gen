@@ -128,7 +128,7 @@ export interface Stats {
 
 export const authService = {
   login: async (username: string, password: string) => {
-    const response = await api.post('/auth/login', { email: username, password });
+    const response = await api.post('/auth/admin/login', { email: username, password });
     localStorage.setItem('admin_token', response.data.access_token);
     if (response.data.user) {
       localStorage.setItem('admin_user', JSON.stringify(response.data.user));
@@ -171,6 +171,25 @@ export const userService = {
   
   delete: async (id: number): Promise<void> => {
     await api.delete(`/admin/users/${id}`);
+  },
+};
+
+export const configService = {
+  getAll: async (): Promise<{ configs: Array<{ key: string; value: string; description?: string }> }> => {
+    const response = await api.get('/admin/config');
+    return response.data;
+  },
+  createOrUpdate: async (key: string, value: string, description?: string) => {
+    const response = await api.post('/admin/config', { key, value, description });
+    return response.data;
+  },
+  batchUpdate: async (configs: Array<{ key: string; value: string; description?: string }>) => {
+    const response = await api.post('/admin/config/batch', configs);
+    return response.data;
+  },
+  initDefaults: async () => {
+    const response = await api.post('/admin/config/init');
+    return response.data;
   },
 };
 

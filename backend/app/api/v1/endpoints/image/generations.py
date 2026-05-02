@@ -12,7 +12,7 @@ from .....models.credit_transaction import CreditTransaction
 from .....models.like_record import LikeRecord
 from .....schemas.generation import GenerationRequest, GenerationResponse, GenerationListResponse, GenerationUpdateRequest
 from ....deps import get_current_user
-from .....tasks.generate_image import process_generation, calculate_credits_cost
+from .....tasks.generate_image import process_generation, calculate_credits_cost, calculate_credits_cost_from_db
 
 router = APIRouter(prefix="/generations", tags=["Generation"])
 logger = logging.getLogger(__name__)
@@ -191,7 +191,7 @@ async def create_generation(
     else:
         provider_name = "relay_api"
     
-    credits_needed = calculate_credits_cost(request.quality, request.size, request.n)
+    credits_needed = await calculate_credits_cost_from_db(request.quality, request.size, request.n, db)
     is_free_generation = False
     
     if not current_user.is_superuser:
@@ -298,11 +298,23 @@ async def refund_generation(
     if generation.refunded:
         return {"refunded": False, "message": "Already refunded"}
     
-    credits_cost = calculate_credits_cost(generation.quality, generation.size, generation.n)
+    credits_cost = await calculate_credits_cost_from_db(generation.quality, generation.size, generation.n, db)
     
-    current_user.credits = (current_user.credits or 0) + credits_cost
+    old_credits = current_user.credits or 0
+    current_user.credits = old_credits + credits_cost
     generation.refunded = True
     generation.error_message = "Generation failed, credits refunded"
+    
+    transaction = CreditTransaction(
+        user_id=current_user.id,
+        amount=credits_cost,
+        balance_after=current_user.credits,
+        transaction_type="generation_refund",
+        reference_type="generation",
+        reference_id=generation.id,
+        description=f"生成任务退款: {generation.prompt[:30]}"
+    )
+    db.add(transaction)
     
     await db.commit()
     

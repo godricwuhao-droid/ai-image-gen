@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Spin, Empty, Alert } from 'antd';
-import { UserOutlined, PictureOutlined, DollarOutlined, RiseOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Spin, Alert, Typography, Button } from 'antd';
+import {
+  UserOutlined,
+  PictureOutlined,
+  DollarOutlined,
+  RiseOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  TeamOutlined,
+  ShoppingOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
 import { statsService } from '../services/api';
+import './Dashboard.less';
+
+const { Title } = Typography;
 
 interface DashboardStats {
   total_users: number;
@@ -69,137 +83,216 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
-        <Spin size="large" />
+      <div className="dashboard-loading">
+        <Spin size="large" tip="加载中..." />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '0 24px' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24, color: '#2C2C2C' }}>数据概览</h1>
-      
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <div>
+          <Title level={3} style={{ margin: 0, color: '#1a1a2e' }}>
+            数据概览
+          </Title>
+          <p className="dashboard-subtitle">欢迎回来，这是今日的数据概览</p>
+        </div>
+        <Button type="primary" icon={<ReloadOutlined />}>
+          刷新数据
+        </Button>
+      </div>
+
       {error && (
         <Alert
           message="数据加载失败"
           description={error}
           type="warning"
           showIcon
-          style={{ marginBottom: 24 }}
+          className="dashboard-alert"
         />
       )}
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="用户总数"
-              value={stats.total_users}
-              prefix={<UserOutlined style={{ color: '#8B7355' }} />}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="生成图片数"
-              value={stats.total_generations}
-              prefix={<PictureOutlined style={{ color: '#8B7355' }} />}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="总收入"
-              value={stats.total_revenue}
-              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}
-              suffix="USD"
-              precision={2}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="本月增长"
-              value={stats.growth_rate}
-              prefix={<RiseOutlined style={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }} />}
-              suffix="%"
-              valueStyle={{ color: stats.growth_rate > 0 ? '#4CAF50' : '#F44336' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="dashboard-stats">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="stat-card stat-card-primary" hoverable>
+              <div className="stat-card-content">
+                <div className="stat-icon">
+                  <UserOutlined />
+                </div>
+                <div className="stat-info">
+                  <Statistic
+                    title="用户总数"
+                    value={stats.total_users}
+                    precision={0}
+                  />
+                </div>
+              </div>
+              <div className="stat-trend">
+                <RiseOutlined />
+                <span>+12% 较上月</span>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="stat-card stat-card-success" hoverable>
+              <div className="stat-card-content">
+                <div className="stat-icon">
+                  <PictureOutlined />
+                </div>
+                <div className="stat-info">
+                  <Statistic
+                    title="生成图片数"
+                    value={stats.total_generations}
+                    precision={0}
+                  />
+                </div>
+              </div>
+              <div className="stat-trend">
+                <RiseOutlined />
+                <span>+8% 较上月</span>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="stat-card stat-card-warning" hoverable>
+              <div className="stat-card-content">
+                <div className="stat-icon">
+                  <DollarOutlined />
+                </div>
+                <div className="stat-info">
+                  <Statistic
+                    title="总收入"
+                    value={stats.total_revenue}
+                    precision={2}
+                    prefix="$"
+                  />
+                </div>
+              </div>
+              <div className="stat-trend">
+                <RiseOutlined />
+                <span>+15% 较上月</span>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="stat-card stat-card-info" hoverable>
+              <div className="stat-card-content">
+                <div className="stat-icon">
+                  <ShoppingOutlined />
+                </div>
+                <div className="stat-info">
+                  <Statistic
+                    title="总订单数"
+                    value={stats.total_orders}
+                    precision={0}
+                  />
+                </div>
+              </div>
+              <div className="stat-trend">
+                <RiseOutlined />
+                <span>+5% 较上月</span>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="本月新用户"
-              value={stats.monthly_new_users}
-              prefix={<UserOutlined style={{ color: '#8B7355' }} />}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="总订单数"
-              value={stats.total_orders}
-              prefix={<DollarOutlined style={{ color: '#8B7355' }} />}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="已完成订单"
-              value={stats.completed_orders}
-              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}
-              valueStyle={{ color: '#4CAF50' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="待处理生成"
-              value={stats.pending_generations + stats.processing_generations}
-              prefix={<ClockCircleOutlined style={{ color: '#FF9800' }} />}
-              valueStyle={{ color: '#FF9800' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="dashboard-section">
+        <Title level={4} className="section-title">
+          生成统计
+        </Title>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="detail-card" hoverable>
+              <div className="detail-card-icon success">
+                <CheckCircleOutlined />
+              </div>
+              <div className="detail-card-content">
+                <p className="detail-card-label">成功生成</p>
+                <h3 className="detail-card-value">{stats.completed_generations}</h3>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="detail-card" hoverable>
+              <div className="detail-card-icon warning">
+                <ClockCircleOutlined />
+              </div>
+              <div className="detail-card-content">
+                <p className="detail-card-label">待处理</p>
+                <h3 className="detail-card-value">
+                  {stats.pending_generations + stats.processing_generations}
+                </h3>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="detail-card" hoverable>
+              <div className="detail-card-icon error">
+                <CloseCircleOutlined />
+              </div>
+              <div className="detail-card-content">
+                <p className="detail-card-label">失败生成</p>
+                <h3 className="detail-card-value">{stats.failed_generations}</h3>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="detail-card" hoverable>
+              <div className="detail-card-icon info">
+                <TeamOutlined />
+              </div>
+              <div className="detail-card-content">
+                <p className="detail-card-label">本月新用户</p>
+                <h3 className="detail-card-value">{stats.monthly_new_users}</h3>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="成功生成"
-              value={stats.completed_generations}
-              prefix={<CheckCircleOutlined style={{ color: '#4CAF50' }} />}
-              valueStyle={{ color: '#2C2C2C' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable>
-            <Statistic
-              title="失败生成"
-              value={stats.failed_generations}
-              prefix={<CloseCircleOutlined style={{ color: '#F44336' }} />}
-              valueStyle={{ color: '#F44336' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="dashboard-section">
+        <Title level={4} className="section-title">
+          订单统计
+        </Title>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12}>
+            <Card className="order-card" hoverable>
+              <Row gutter={16} align="middle">
+                <Col>
+                  <div className="order-card-icon success">
+                    <CheckCircleOutlined />
+                  </div>
+                </Col>
+                <Col flex={1}>
+                  <p className="order-card-label">已完成订单</p>
+                  <h3 className="order-card-value">{stats.completed_orders}</h3>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card className="order-card" hoverable>
+              <Row gutter={16} align="middle">
+                <Col>
+                  <div className="order-card-icon primary">
+                    <RiseOutlined />
+                  </div>
+                </Col>
+                <Col flex={1}>
+                  <p className="order-card-label">本月增长</p>
+                  <h3 className="order-card-value">
+                    {stats.growth_rate > 0 ? '+' : ''}
+                    {stats.growth_rate}%
+                  </h3>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 };

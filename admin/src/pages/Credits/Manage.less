@@ -1,0 +1,406 @@
+.credits-manage {
+  // 移除 padding，让内容填充满父容器
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+
+  // 页面标题
+  h2 {
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding: 0 24px;
+  }
+
+  // 页面描述文字
+  > div:first-child {
+    margin-bottom: 20px;
+    padding: 0 24px;
+  }
+
+  // =====================================================
+  // 统计卡片样式 - 简洁渐变
+  // =====================================================
+  // 统计卡片行
+  > div:nth-child(2) {
+    padding: 0 24px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-statistic-title {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .ant-statistic-content {
+      color: #fff;
+      padding: 0;
+    }
+
+    .ant-statistic-content-value {
+      color: #fff;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .ant-statistic-prefix {
+      margin-right: 6px;
+      font-size: 20px;
+    }
+  }
+
+  // 紫色渐变 - 总积分
+  .stat-card-purple {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  }
+
+  // 绿色渐变 - 用户数
+  .stat-card-green {
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+  }
+
+  // 蓝色渐变 - 交易数
+  .stat-card-blue {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  }
+
+  // =====================================================
+  // 操作栏样式
+  // =====================================================
+  .action-bar {
+    margin-bottom: 16px;
+    padding: 12px 24px 0;
+  }
+
+  // =====================================================
+  // 表格容器样式 - 无边框，更简洁
+  // =====================================================
+  .table-container {
+    .ant-table-wrapper {
+      background: transparent;
+    }
+
+    .ant-table {
+      background: transparent;
+    }
+
+    .ant-table-container {
+      border: none;
+      border-radius: 0;
+    }
+
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 600;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 14px 16px;
+    }
+
+    .ant-table-tbody > tr {
+      transition: background-color 0.2s ease;
+
+      &:hover > td {
+        background: #fafafa;
+      }
+    }
+
+    .ant-table-cell {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    // 分页样式
+    .ant-pagination {
+      margin-top: 16px;
+      text-align: right;
+      padding: 8px 0;
+    }
+  }
+
+  // =====================================================
+  // 操作按钮样式 - 简洁的 text 按钮
+  // =====================================================
+  .action-btn-recharge {
+    color: #52c41a;
+    background: rgba(82, 196, 26, 0.08);
+    border: none;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 6px;
+
+    &:hover {
+      color: #73d13d;
+      background: rgba(82, 196, 26, 0.15);
+    }
+  }
+
+  .action-btn-deduct {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.08);
+    border: none;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 6px;
+
+    &:hover {
+      color: #ff7875;
+      background: rgba(255, 77, 79, 0.15);
+    }
+  }
+
+  .action-btn-transaction {
+    color: #1890ff;
+    background: rgba(24, 144, 255, 0.08);
+    border: none;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 6px;
+
+    &:hover {
+      color: #40a9ff;
+      background: rgba(24, 144, 255, 0.15);
+    }
+  }
+
+  // =====================================================
+  // 美化弹窗样式
+  // =====================================================
+  .ant-modal {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+
+    .ant-modal-content {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .ant-modal-header {
+      border-radius: 12px 12px 0 0;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 20px 24px;
+
+      // 根据操作类型显示不同渐变
+      &.recharge-header {
+        background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+      }
+
+      &.deduct-header {
+        background: linear-gradient(135deg, #fff2f0 0%, #ffccc7 100%);
+      }
+    }
+
+    .ant-modal-title {
+      font-weight: 600;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .ant-modal-body {
+      padding: 24px;
+    }
+
+    .ant-modal-footer {
+      border-top: 1px solid #f0f0f0;
+      padding: 16px 24px;
+      background: #fafafa;
+    }
+  }
+
+  // =====================================================
+  // 操作按钮样式
+  // =====================================================
+  .ant-btn {
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+
+    // 充值按钮 - 绿色渐变
+    &[type="primary"] {
+      background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+      border: none;
+      box-shadow: 0 2px 6px rgba(82, 196, 26, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #73d13d 0%, #95de64 100%);
+        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    // 扣除按钮 - 红色渐变
+    &[danger] {
+      background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+      border: none;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #ff7875 0%, #ff9c9c 100%);
+        box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    // 链接按钮
+    &[type="link"] {
+      color: #1890ff;
+      font-weight: 500;
+
+      &:hover {
+        color: #40a9ff;
+      }
+    }
+  }
+
+  // =====================================================
+  // 积分标签样式
+  // =====================================================
+  .ant-tag {
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    padding: 2px 8px;
+
+    &[color="blue"] {
+      background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+      color: #1890ff;
+    }
+
+    &[color="green"] {
+      background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+      color: #52c41a;
+    }
+
+    &[color="red"] {
+      background: linear-gradient(135deg, #fff2f0 0%, #ffccc7 100%);
+      color: #ff4d4f;
+    }
+
+    &[color="purple"] {
+      background: linear-gradient(135deg, #f9f0ff 0%, #d3adf7 100%);
+      color: #722ed1;
+    }
+
+    &[color="orange"] {
+      background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
+      color: #fa8c16;
+    }
+  }
+
+  // =====================================================
+  // 输入框样式
+  // =====================================================
+  .ant-input-number {
+    border-radius: 8px;
+    border: 1px solid #d9d9d9;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #40a9ff;
+    }
+
+    &:focus,
+    &.ant-input-number-focused {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+    }
+  }
+
+  .ant-input,
+  .ant-input-textarea {
+    border-radius: 8px;
+    border: 1px solid #d9d9d9;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #40a9ff;
+    }
+
+    &:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+    }
+  }
+
+  // =====================================================
+  // 卡片预览样式
+  // =====================================================
+  .ant-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+
+    &.ant-card-type-inner {
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      border: 1px solid #e8e8e8;
+
+      .ant-card-head {
+        border-bottom: 1px solid #e8e8e8;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // =====================================================
+  // 加载状态
+  // =====================================================
+  .ant-spin-nested-loading {
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // =====================================================
+  // 分割线样式
+  // =====================================================
+  .ant-divider {
+    border-color: #f0f0f0;
+    margin: 20px 0;
+  }
+
+  // =====================================================
+  // 表单标签样式
+  // =====================================================
+  label {
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+
+    &::before {
+      // 不添加冒号，保持原有样式
+    }
+  }
+
+  // =====================================================
+  // 辅助文本样式
+  // =====================================================
+  .ant-typography-secondary {
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+  }
+}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
@@ -273,9 +273,9 @@ async def get_my_orders(
     offset = (page - 1) * page_size
     
     count_result = await db.execute(
-        select(Order).where(Order.user_id == current_user.id)
+        select(func.count(Order.id)).where(Order.user_id == current_user.id)
     )
-    total = len(count_result.scalars().all())
+    total = count_result.scalar()
     
     result = await db.execute(
         select(Order)
@@ -328,38 +328,44 @@ async def stripe_webhook(
     if event_type == 'checkout.session.completed':
         session_id = data.get('id')
         if session_id:
+            # 使用原子更新，防止Webhook重复调用导致重复充值
+            result = await db.execute(
+                update(Order)
+                .where(Order.stripe_session_id == session_id, Order.payment_status != 'completed')
+                .values(payment_status='completed')
+            )
+            if result.rowcount == 0:
+                logger.warning(f"[Webhook] Order already completed or not found for session {session_id}")
+                return {"received": True}
+            
+            # 重新查询已更新的order
             order_result = await db.execute(
                 select(Order).where(Order.stripe_session_id == session_id)
             )
             order = order_result.scalar_one_or_none()
             if order:
-                if order.payment_status == 'completed':
-                    logger.warning(f"[Webhook] Order {order.id} already completed, skipping")
-                else:
-                    order.payment_status = 'completed'
+                user_result = await db.execute(
+                    select(User).where(User.id == order.user_id)
+                )
+                user = user_result.scalar_one_or_none()
+                if user:
+                    old_credits = user.credits or 0
+                    user.credits = old_credits + order.credits
                     
-                    user_result = await db.execute(
-                        select(User).where(User.id == order.user_id)
+                    transaction = CreditTransaction(
+                        user_id=user.id,
+                        amount=order.credits,
+                        balance_after=user.credits,
+                        transaction_type="purchase",
+                        reference_type="order",
+                        reference_id=order.id,
+                        description=f"Stripe支付获得积分: {order.credits}积分"
                     )
-                    user = user_result.scalar_one_or_none()
-                    if user:
-                        old_credits = user.credits or 0
-                        user.credits = old_credits + order.credits
-                        
-                        transaction = CreditTransaction(
-                            user_id=user.id,
-                            amount=order.credits,
-                            balance_after=user.credits,
-                            transaction_type="purchase",
-                            reference_type="order",
-                            reference_id=order.id,
-                            description=f"Stripe支付获得积分: {order.credits}积分"
-                        )
-                        db.add(transaction)
-                        logger.info(f"[Webhook] Credits added: user_id={user.id}, old={old_credits}, added={order.credits}, new={user.credits}")
-                    
-                    await db.commit()
-                    logger.info(f"[Webhook] Order {order.id} completed successfully")
+                    db.add(transaction)
+                    logger.info(f"[Webhook] Credits added: user_id={user.id}, old={old_credits}, added={order.credits}, new={user.credits}")
+                
+                await db.commit()
+                logger.info(f"[Webhook] Order {order.id} completed successfully")
     
     return {"received": True}
 

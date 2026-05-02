@@ -7,6 +7,7 @@ from sqlalchemy import select, update
 from app.models.generation import Generation
 from app.models.user import User
 from app.models.credit_transaction import CreditTransaction
+from app.models.config import SystemConfig
 from app.services.provider.registry import get_provider
 from app.services.provider.base import GenerateRequest
 from app.tasks.celery_app import celery_app
@@ -15,12 +16,12 @@ import asyncio
 logger = logging.getLogger(__name__)
 
 # =====================================================
-# 积分消耗对照表
+# 积分消耗对照表（默认值，优先从数据库读取配置）
 # 基于中转站新定价文档：https://jiekou.ai/console/pricing-console
 # 格式：质量 -> 尺寸 -> 积分
 # =====================================================
 
-CREDITS_MAP = {
+DEFAULT_CREDITS_MAP = {
     "low": {
         "1024x1024": 1,
         "1024x1536": 1,
@@ -76,20 +77,44 @@ SIZE_MAP = {
 
 def calculate_credits_cost(quality: str, size: str, n: int = 1) -> int:
     """
-    Calculate credits cost based on quality, size and count
-
-    Args:
-        quality: 质量等级 (low/medium/high)
-        size: 尺寸 (1024x1024 等)
-        n: 生成数量
-
-    Returns:
-        总积分消耗
+    Calculate credits cost based on quality, size and count (使用默认值)
     """
     normalized_quality = QUALITY_MAP.get(quality.lower(), "medium")
     normalized_size = SIZE_MAP.get(size, "1024x1024")
 
-    credits_per_image = CREDITS_MAP.get(normalized_quality, {}).get(normalized_size, 10)
+    credits_per_image = DEFAULT_CREDITS_MAP.get(normalized_quality, {}).get(normalized_size, 10)
+    return credits_per_image * n
+
+
+async def calculate_credits_cost_from_db(quality: str, size: str, n: int = 1, db: AsyncSession = None) -> int:
+    """
+    Calculate credits cost from database config, fallback to default
+    """
+    normalized_quality = QUALITY_MAP.get(quality.lower(), "medium")
+    normalized_size = SIZE_MAP.get(size, "1024x1024")
+    config_key = f"credits_{normalized_quality}_{normalized_size}"
+
+    # 尝试从数据库读取配置
+    if db:
+        try:
+            result = await db.execute(
+                select(SystemConfig).where(SystemConfig.key == config_key)
+            )
+            config = result.scalar_one_or_none()
+            if config and config.value:
+                try:
+                    credits_per_image = int(config.value)
+                    if credits_per_image < 0:
+                        raise ValueError("Negative value")
+                    return credits_per_image * n
+                except (ValueError, TypeError) as e:
+                    logger.warning(f"Invalid credits config value: {config.value}, key={config_key}, using default")
+                    raise  # 向上抛出以触发fallback
+        except Exception as e:
+            logger.warning(f"Failed to read credits config from DB: {e}")
+
+    #  fallback to default
+    credits_per_image = DEFAULT_CREDITS_MAP.get(normalized_quality, {}).get(normalized_size, 10)
     return credits_per_image * n
 
 
@@ -206,8 +231,8 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
 
                     images.append(img_data)
 
-                credits_cost = generation.credits_cost or calculate_credits_cost(
-                    generation.quality, generation.size, generation.n
+                credits_cost = generation.credits_cost or await calculate_credits_cost_from_db(
+                    generation.quality, generation.size, generation.n, db
                 )
                 generation.images = images
                 generation.cost_usd = response.cost_usd
@@ -227,19 +252,24 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                 except Exception as e:
                     logger.warning(f"[Celery] SSE通知失败: {e}")
 
-                user_result = await db.execute(select(User).where(User.id == user_id))
-                user = user_result.scalar_one_or_none()
-                if user:
-                    today = date.today()
-                    if user.last_generation_date and user.last_generation_date.date() == today:
-                        user.daily_generation_count += generation.n
-                    else:
-                        user.daily_generation_count = generation.n
-                    user.last_generation_date = datetime.utcnow()
-                    user.total_generations += generation.n
-                    logger.info(f"[Celery] 用户统计更新: user_id={user_id}, daily_count={user.daily_generation_count}, total={user.total_generations}")
-
-                    await db.commit()
+                # 使用原子更新用户统计，避免并发问题
+                today = date.today()
+                from sqlalchemy import case, func
+                await db.execute(
+                    update(User)
+                    .where(User.id == user_id)
+                    .values(
+                        daily_generation_count=case(
+                            (func.date(User.last_generation_date) == today,
+                             User.daily_generation_count + generation.n),
+                            else_=generation.n
+                        ),
+                        last_generation_date=datetime.utcnow(),
+                        total_generations=User.total_generations + generation.n
+                    )
+                )
+                logger.info(f"[Celery] 用户统计原子更新: user_id={user_id}, n={generation.n}")
+                await db.commit()
 
             except Exception as e:
                 logger.error(f"[Celery] 生成失败: {e}")
@@ -247,8 +277,8 @@ def process_generation(generation_id: int, user_id: int, provider_name: str = "o
                 generation.error_message = str(e)
                 await db.commit()
 
-                credits_cost = generation.credits_cost or calculate_credits_cost(
-                    generation.quality, generation.size, generation.n
+                credits_cost = generation.credits_cost or await calculate_credits_cost_from_db(
+                    generation.quality, generation.size, generation.n, db
                 )
 
                 if credits_cost > 0 and not generation.refunded:

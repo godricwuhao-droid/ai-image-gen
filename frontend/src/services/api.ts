@@ -176,6 +176,21 @@ export const creditsService = {
   },
 };
 
+/** 积分配置：quality -> size -> credits */
+export interface CreditsConfig {
+  low: Record<string, number>;
+  medium: Record<string, number>;
+  high: Record<string, number>;
+  [key: string]: Record<string, number>;
+}
+
+export const creditsConfigService = {
+  getConfig: async (): Promise<CreditsConfig> => {
+    const response = await api.get('/credits-config');
+    return response.data;
+  },
+};
+
 export interface Package {
   id: number;
   name: string;
@@ -251,7 +266,7 @@ export const templateService = {
     return response.data;
   },
 
-  create: async (data: { name: string; prompt: string; category?: string; is_public?: boolean }): Promise<Template> => {
+  create: async (data: { name: string; prompt: string; category?: string; description?: string; is_public?: boolean }): Promise<Template> => {
     const response = await api.post('/templates', data);
     return response.data;
   },

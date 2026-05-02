@@ -3,12 +3,32 @@ from fastapi.responses import StreamingResponse
 import asyncio
 import json
 import logging
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
-generation_complete_events = {}
+generation_complete_events: dict = {}
+
+
+async def cleanup_old_events(interval=300):
+    """定期清理过期的 SSE 事件，防止内存泄漏"""
+    while True:
+        await asyncio.sleep(interval)
+        cutoff = datetime.utcnow() - timedelta(minutes=5)
+        keys_to_remove = [
+            k for k, v in generation_complete_events.items()
+            if v.get('created_at', cutoff) < cutoff
+        ]
+        for k in keys_to_remove:
+            generation_complete_events.pop(k, None)
+        if keys_to_remove:
+            logger.info(f"[SSE] 清理了 {len(keys_to_remove)} 个过期事件")
+
+
+# 在模块加载时启动清理任务
+asyncio.create_task(cleanup_old_events())
 
 
 async def event_generator(user_id: int, generation_id: int):
@@ -74,6 +94,7 @@ def notify_generation_complete(user_id: int, generation_id: int, status: str, im
         "status": status,
         "generation_id": generation_id,
         "images": images or [],
-        "error": error
+        "error": error,
+        "created_at": datetime.utcnow()  # 记录创建时间，用于清理过期事件
     }
     logger.info(f"[SSE] 通知已发送: {event_key} -> {status}")

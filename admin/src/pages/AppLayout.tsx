@@ -1,16 +1,19 @@
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, Badge, Avatar, Dropdown } from 'antd';
 import { useNavigate, useLocation, Outlet } from 'umi';
-import { 
-  DashboardOutlined, 
-  UserOutlined, 
-  ShoppingCartOutlined, 
-  DollarOutlined, 
+import {
+  DashboardOutlined,
+  UserOutlined,
+  ShoppingCartOutlined,
+  DollarOutlined,
   PictureOutlined,
   FileTextOutlined,
   SettingOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  BellOutlined,
+  CloudOutlined,
 } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
+import './AppLayout.less';
 
 const { Sider, Content, Header } = Layout;
 
@@ -19,7 +22,6 @@ const AppLayout: React.FC = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { token } = theme.useToken();
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -38,14 +40,8 @@ const AppLayout: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        background: '#FAFAF8'
-      }}>
-        <div style={{ color: '#8B7355', fontSize: 16 }}>加载中...</div>
+      <div className="loading-container">
+        <div className="loading-spinner" />
       </div>
     );
   }
@@ -60,90 +56,86 @@ const AppLayout: React.FC = () => {
     { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
   ];
 
+  const userMenuItems = [
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+    },
+  ];
+
+  const handleUserMenuClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      handleLogout();
+    }
+  };
+
+  const getUserInfo = () => {
+    try {
+      const userStr = localStorage.getItem('admin_user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.name || user.email?.split('@')[0] || 'Admin';
+      }
+    } catch (e) {
+      console.error('Failed to parse user info:', e);
+    }
+    return 'Admin';
+  };
+
   return (
-    <Layout style={{ minHeight: '100vh', background: '#FAFAF8' }}>
-      <Sider 
-        collapsible 
+    <Layout className="admin-layout">
+      <Sider
+        className="admin-sider"
+        collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        theme="light"
-        width={220}
-        style={{ 
-          background: '#FFFFFF',
-          borderRight: '1px solid #E8E6E1',
-          boxShadow: '2px 0 8px rgba(0,0,0,0.04)'
-        }}
+        width={240}
+        collapsedWidth={80}
       >
-        <div style={{ 
-          height: 64, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          color: '#8B7355', 
-          fontSize: 18, 
-          fontWeight: 600,
-          borderBottom: '1px solid #E8E6E1',
-          background: '#FAFAF8'
-        }}>
-          {collapsed ? 'AI' : '✨ AI管理后台'}
+        <div className="admin-logo">
+          <CloudOutlined className="admin-logo-icon" />
+          {!collapsed && <span className="admin-logo-text">AI 管理后台</span>}
         </div>
         <Menu
-          theme="light"
+          className="admin-menu"
           mode="inline"
           selectedKeys={[location.pathname]}
           onClick={({ key }) => navigate(key)}
           items={menuItems}
-          style={{ 
-            background: '#FFFFFF',
-            borderRight: 'none',
-            fontSize: 14
-          }}
-          selectedColor="#8B7355"
         />
       </Sider>
-      <Layout style={{ background: '#FAFAF8' }}>
-        <Header style={{ 
-          padding: '0 24px', 
-          background: '#FFFFFF', 
-          display: 'flex', 
-          justifyContent: 'flex-end', 
-          alignItems: 'center',
-          borderBottom: '1px solid #E8E6E1',
-          height: 64
-        }}>
-          <div 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 12,
-              cursor: 'pointer',
-              color: '#6B6B6B',
-              padding: '8px 16px',
-              borderRadius: 8,
-              transition: 'all 0.2s'
-            }}
-            onClick={handleLogout}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#F5F5F5';
-              e.currentTarget.style.color = '#8B7355';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#6B6B6B';
-            }}
-          >
-            <LogoutOutlined />
-            <span>退出登录</span>
+      <Layout className="admin-layout-main">
+        <Header className="admin-header">
+          <div className="admin-header-left">
+            <h2 className="admin-page-title">
+              {menuItems.find((item) => item.key === location.pathname)?.label || '仪表盘'}
+            </h2>
+          </div>
+          <div className="admin-header-right">
+            <Badge count={3} className="admin-notification">
+              <BellOutlined />
+            </Badge>
+            <Dropdown
+              menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
+              placement="bottomRight"
+              arrow
+            >
+              <div className="admin-user-info">
+                <Avatar
+                  style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    verticalAlign: 'middle',
+                  }}
+                >
+                  {getUserInfo().charAt(0).toUpperCase()}
+                </Avatar>
+                <span className="admin-username">{getUserInfo()}</span>
+              </div>
+            </Dropdown>
           </div>
         </Header>
-        <Content style={{ 
-          margin: 24, 
-          padding: 24, 
-          background: '#FFFFFF', 
-          minHeight: 280, 
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-        }}>
+        <Content className="admin-content">
           <Outlet />
         </Content>
       </Layout>

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
 from typing import List
 import base64
 import logging
@@ -7,8 +8,9 @@ import logging
 from .....core.database import get_db
 from .....models.user import User
 from .....models.generation import Generation
+from .....models.credit_transaction import CreditTransaction
 from ....deps import get_current_user
-from app.tasks.generate_image import calculate_credits_cost
+from app.tasks.generate_image import calculate_credits_cost, calculate_credits_cost_from_db
 from app.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -45,19 +47,20 @@ async def create_image_edit(
         image_base64 = base64.b64encode(image_data).decode()
         images_base64.append(f"data:{img.content_type};base64,{image_base64}")
     
-    credits_needed = calculate_credits_cost(quality, size, 1)
+    credits_needed = await calculate_credits_cost_from_db(quality, size, 1, db)
     
+    # 使用原子操作扣除积分，避免并发问题
     if not current_user.is_superuser:
-        if current_user.credits and current_user.credits > 0:
-            if current_user.credits < credits_needed:
-                raise HTTPException(
-                    status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                    detail=f"积分不足，需要{credits_needed}积分，当前剩余{current_user.credits}积分",
-                )
-        else:
+        result = await db.execute(
+            update(User)
+            .where(User.id == current_user.id)
+            .where(User.credits >= credits_needed)
+            .values(credits=User.credits - credits_needed)
+        )
+        if result.rowcount == 0:
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail="积分不足，请充值后重试",
+                detail=f"积分不足，需要{credits_needed}积分",
             )
     
     from app.models.generation import Generation
@@ -75,7 +78,18 @@ async def create_image_edit(
     )
     db.add(generation)
     
-    current_user.credits = max(0, current_user.credits - credits_needed)
+    # 记录积分交易
+    if not current_user.is_superuser:
+        transaction = CreditTransaction(
+            user_id=current_user.id,
+            amount=-credits_needed,
+            balance_after=current_user.credits - credits_needed,
+            transaction_type="image_edit_deduct",
+            reference_type="generation",
+            reference_id=generation.id,
+            description=f"图片编辑消耗: {prompt[:50]}"
+        )
+        db.add(transaction)
     
     await db.commit()
     await db.refresh(generation)

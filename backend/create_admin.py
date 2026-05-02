@@ -9,7 +9,7 @@ import asyncio
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app.core.database import async_session, get_db
+from app.core.database import AsyncSessionLocal, get_db
 from app.core.security import get_password_hash
 from app.models.user import User
 from sqlalchemy import select
@@ -21,7 +21,7 @@ async def create_admin_user():
     username = "admin"
     password = "admin123"
     
-    async for db in get_db():
+    async with AsyncSessionLocal() as db:
         # 检查是否已存在
         result = await db.execute(select(User).where(User.email == email))
         existing_user = result.scalar_one_or_none()
@@ -54,8 +54,6 @@ async def create_admin_user():
             print(f"   用户名: {username}")
             print(f"   密码: {password}")
             print(f"   超级管理员: {user.is_superuser}")
-        
-        break
 
 
 if __name__ == "__main__":

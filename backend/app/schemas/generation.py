@@ -16,7 +16,7 @@ class GenerationRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=4000)
     size: str = Field(default="1024x1024")
     quality: str = Field(default="standard")
-    n: int = Field(default=1)
+    n: int = Field(default=1, ge=1, le=10, description="生成数量，最多10张")
 
 
 class ImageData(BaseModel):

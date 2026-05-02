@@ -57,6 +57,11 @@ async def get_public_galleries(
 
     images = []
     for gen, user in rows:
+        masked_email = None
+        if user.email:
+            parts = user.email.split('@')
+            if len(parts) == 2:
+                masked_email = f"{parts[0][0]}***@{parts[1]}" if parts[0] else "***@{}"
         images.append(GalleryImage(
             id=gen.id,
             user_id=gen.user_id,
@@ -68,7 +73,7 @@ async def get_public_galleries(
             likes_count=gen.likes_count or 0,
             views_count=gen.views_count or 0,
             username=user.username,
-            user_email=user.email,
+            user_email=masked_email,
             created_at=gen.created_at
         ))
 
@@ -99,6 +104,11 @@ async def get_popular_galleries(
 
     images = []
     for gen, user in rows:
+        masked_email = None
+        if user.email:
+            parts = user.email.split('@')
+            if len(parts) == 2:
+                masked_email = f"{parts[0][0]}***@{parts[1]}" if parts[0] else "***@{}"
         images.append(GalleryImage(
             id=gen.id,
             user_id=gen.user_id,
@@ -110,7 +120,7 @@ async def get_popular_galleries(
             likes_count=gen.likes_count or 0,
             views_count=gen.views_count or 0,
             username=user.username,
-            user_email=user.email,
+            user_email=masked_email,
             created_at=gen.created_at
         ))
 
@@ -149,6 +159,11 @@ async def get_my_gallery(
 
     images = []
     for gen, user in rows:
+        masked_email = None
+        if user.email:
+            parts = user.email.split('@')
+            if len(parts) == 2:
+                masked_email = f"{parts[0][0]}***@{parts[1]}" if parts[0] else "***@{}"
         images.append(GalleryImage(
             id=gen.id,
             user_id=gen.user_id,
@@ -160,7 +175,7 @@ async def get_my_gallery(
             likes_count=gen.likes_count or 0,
             views_count=gen.views_count or 0,
             username=user.username,
-            user_email=user.email,
+            user_email=masked_email,
             created_at=gen.created_at
         ))
 
@@ -197,6 +212,12 @@ async def get_gallery_detail(
     gen.views_count = (gen.views_count or 0) + 1
     await db.commit()
 
+    masked_email = None
+    if user.email:
+        parts = user.email.split('@')
+        if len(parts) == 2:
+            masked_email = f"{parts[0][0]}***@{parts[1]}" if parts[0] else "***@{}"
+
     return GalleryImage(
         id=gen.id,
         user_id=gen.user_id,
@@ -208,7 +229,7 @@ async def get_gallery_detail(
         likes_count=gen.likes_count or 0,
         views_count=gen.views_count,
         username=user.username,
-        user_email=user.email,
+        user_email=masked_email,
         created_at=gen.created_at
     )
 

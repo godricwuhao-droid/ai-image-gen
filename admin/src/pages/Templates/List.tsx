@@ -7,17 +7,14 @@ const { TextArea } = Input;
 
 interface Template {
   id?: number;
+  user_id?: number;
   name: string;
   description?: string;
   category?: string;
   prompt: string;
-  tags?: string[];
-  is_active: boolean;
   is_public: boolean;
   usage_count: number;
-  creator_id?: number;
   created_at?: string;
-  updated_at?: string;
 }
 
 const TemplateList: React.FC = () => {
@@ -68,7 +65,10 @@ const TemplateList: React.FC = () => {
 
   const handleEdit = (record: Template) => {
     setEditingTemplate(record);
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      ...record,
+      is_public: record.is_public ?? false,
+    });
     setModalVisible(true);
   };
 
@@ -125,13 +125,13 @@ const TemplateList: React.FC = () => {
     { title: '分类', dataIndex: 'category', key: 'category', width: 100 },
     { title: '描述', dataIndex: 'description', key: 'description', ellipsis: true },
     {
-      title: '状态',
-      dataIndex: 'is_active',
-      key: 'is_active',
-      width: 100,
-      render: (isActive: boolean) => (
-        <Tag color={isActive ? 'green' : 'red'}>
-          {isActive ? '启用' : '禁用'}
+      title: '公开',
+      dataIndex: 'is_public',
+      key: 'is_public',
+      width: 80,
+      render: (isPublic: boolean) => (
+        <Tag color={isPublic ? 'green' : 'orange'}>
+          {isPublic ? '公开' : '私有'}
         </Tag>
       ),
     },
@@ -188,22 +188,30 @@ const TemplateList: React.FC = () => {
         <Form
           form={form}
           onFinish={handleSubmit}
-          initialValues={{ is_active: true, is_public: false }}
+          initialValues={{ is_public: true }}
         >
           <Form.Item name="name" label="模板名称" rules={[{ required: true, message: '请输入模板名称' }]}>
             <Input placeholder="请输入模板名称" />
           </Form.Item>
           <Form.Item name="category" label="分类">
-            <Input placeholder="请输入分类" />
+            <Select placeholder="请选择分类">
+              <Option value="portrait">人像</Option>
+              <Option value="landscape">风景</Option>
+              <Option value="architecture">建筑</Option>
+              <Option value="anime">动漫</Option>
+              <Option value="art">艺术</Option>
+              <Option value="business">商业</Option>
+              <Option value="general">通用</Option>
+            </Select>
           </Form.Item>
           <Form.Item name="description" label="描述">
             <Input.TextArea rows={2} placeholder="请输入描述" />
           </Form.Item>
           <Form.Item name="prompt" label="Prompt模板" rules={[{ required: true, message: '请输入Prompt模板' }]}>
-            <TextArea rows={4} placeholder="请输入Prompt模板内容，可以使用{placeholder}表示变量" />
+            <TextArea rows={4} placeholder="请输入Prompt模板内容" />
           </Form.Item>
-          <Form.Item name="is_active" label="启用状态" valuePropName="checked">
-            <span>启用</span>
+          <Form.Item name="is_public" label="公开" valuePropName="checked">
+            <span>公开（前端模板库可见）</span>
           </Form.Item>
           <Form.Item>
             <Space>

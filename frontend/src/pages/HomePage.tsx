@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import api, { creditsConfigService, CreditsConfig } from '../services/api';
 import {
   SparklesIcon,
   PhotoIcon,
@@ -38,9 +38,9 @@ const SIZE_OPTIONS = [
 ];
 
 const QUALITY_OPTIONS = [
-  { value: 'low', label: '快速', credits: 1, desc: '预览' },
-  { value: 'medium', label: '标准', credits: 10, desc: '推荐' },
-  { value: 'high', label: '高清', credits: 40, desc: '最佳' },
+  { value: 'low', label: '快速', desc: '预览' },
+  { value: 'medium', label: '标准', desc: '推荐' },
+  { value: 'high', label: '高清', desc: '最佳' },
 ];
 
 const COUNT_OPTIONS = [1, 2, 4];
@@ -61,14 +61,15 @@ const MODERATION_OPTIONS = [
   { value: 'low', label: '低审核' },
 ];
 
-const CREDITS_MAP: Record<string, Record<string, number>> = {
+// 默认积分配置（fallback），与后端 DEFAULT_CREDITS_MAP 保持一致
+const DEFAULT_CREDITS_CONFIG: CreditsConfig = {
   low: { '1024x1024': 1, '1024x1536': 1, '1536x1024': 1, '2048x2048': 2, '2048x1152': 1, '3840x2160': 2, '2160x3840': 2 },
   medium: { '1024x1024': 10, '1024x1536': 8, '1536x1024': 8, '2048x2048': 20, '2048x1152': 8, '3840x2160': 19, '2160x3840': 19 },
   high: { '1024x1024': 40, '1024x1536': 32, '1536x1024': 32, '2048x2048': 81, '2048x1152': 32, '3840x2160': 76, '2160x3840': 76 },
 };
 
-const calculateCredits = (quality: string, size: string, n: number): number => {
-  const creditsMap = CREDITS_MAP[quality] || CREDITS_MAP['medium'];
+const calculateCredits = (config: CreditsConfig, quality: string, size: string, n: number): number => {
+  const creditsMap = (config as any)[quality] || config['medium'];
   const creditsPerImage = creditsMap[size] || creditsMap['1024x1024'] || 10;
   return creditsPerImage * n;
 };
@@ -82,6 +83,7 @@ interface GenerationStatus {
 
 export const HomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [prompt, setPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('');
   const [size, setSize] = useState('1024x1024');
@@ -95,12 +97,38 @@ export const HomePage = () => {
   const [userCredits, setUserCredits] = useState(0);
   const [currentGeneration, setCurrentGeneration] = useState<GenerationStatus | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const userClosedModalRef = useRef(false);
   const [historyPrompts, setHistoryPrompts] = useState<{ prompt: string; count: number; lastUsed: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 从模板页面跳转过来时，自动填充提示词
+  useEffect(() => {
+    if (location.state && typeof location.state === 'object') {
+      if (location.state.prompt) {
+        setPrompt(location.state.prompt);
+      }
+      if (location.state.style) {
+        setSelectedStyle(location.state.style);
+      }
+      // 清除 state，避免刷新后重复填充
+      window.history.replaceState(null, '');
+    }
+  }, [location.state]);
+
+  // 积分配置：从后端 API 获取，fallback 到默认值
+  const [creditsConfig, setCreditsConfig] = useState<CreditsConfig>(DEFAULT_CREDITS_CONFIG);
+
+  useEffect(() => {
+    creditsConfigService.getConfig().then(res => {
+      setCreditsConfig(res);
+    }).catch(() => {
+      // API 请求失败，使用默认配置
+    });
+  }, []);
 
   const fetchHistoryPrompts = useCallback(async () => {
     try {
@@ -167,12 +195,12 @@ export const HomePage = () => {
     setImagePreviews(newPreviews);
   };
 
-  const creditsCost = useMemo(() => calculateCredits(quality, size, n), [quality, size, n]);
+  const creditsCost = useMemo(() => calculateCredits(creditsConfig, quality, size, n), [creditsConfig, quality, size, n]);
 
   const pollGenerationStatus = useCallback(async (generationId: number) => {
     const maxAttempts = 120;
     let attempts = 0;
-    const currentCreditsCost = calculateCredits(quality, size, n);
+    const currentCreditsCost = calculateCredits(creditsConfig, quality, size, n);
 
     const poll = async () => {
       if (userClosedModalRef.current) return;
@@ -228,7 +256,7 @@ export const HomePage = () => {
 
   const handleSubmit = async () => {
     if (!prompt.trim()) { toast.error('请输入图片描述'); return; }
-    if (!isAuthenticated) { toast.error('请先登录'); return; }
+    if (!isAuthenticated) { setShowLoginModal(true); return; }
 
     const preset = STYLE_PRESETS.find(s => s.name === selectedStyle);
     const fullPrompt = preset ? `${prompt}, ${preset.prompt}` : prompt;
@@ -356,16 +384,16 @@ export const HomePage = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-7xl mx-auto px-6 py-3">
         <button
           onClick={handleSubmit}
-          disabled={!prompt.trim() || !isAuthenticated}
-          className="btn btn-primary w-full py-4 text-lg max-w-2xl mx-auto flex items-center justify-center gap-2"
+          disabled={!prompt.trim()}
+          className="btn btn-primary w-full py-3 text-base max-w-xl mx-auto flex items-center justify-center gap-2"
           style={{background: 'var(--color-accent-gradient)', color: 'white'}}
         >
           <SparklesIcon className="w-6 h-6" />
           <span>
-            {isAuthenticated && prompt.trim() ? (
+            {prompt.trim() ? (
               selectedImages.length > 0 
                 ? `编辑图片 (${creditsCost}积分)` 
                 : `生成图片 (${creditsCost}积分)`
@@ -407,18 +435,18 @@ export const HomePage = () => {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex gap-8">
-          <div className="w-80 shrink-0 space-y-4">
-            <div className="card-elevated p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <PhotoIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                <span className="font-medium">图像尺寸</span>
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex gap-6">
+          <div className="w-72 shrink-0 space-y-3">
+            <div className="card-elevated p-3 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <PhotoIcon className="w-4 h-4" style={{color: 'var(--color-accent)'}} />
+                <span className="font-medium text-sm">图像尺寸</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {SIZE_OPTIONS.map(opt => (
                   <button key={opt.value} onClick={() => setSize(opt.value)}
-                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${size === opt.value ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
+                    className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${size === opt.value ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
                     style={size === opt.value ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {borderColor: 'var(--color-border)'}}>
                     {opt.label}
                   </button>
@@ -426,31 +454,33 @@ export const HomePage = () => {
               </div>
             </div>
 
-            <div className="card-elevated p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <SparklesIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                <span className="font-medium">生成质量</span>
+            <div className="card-elevated p-3 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <SparklesIcon className="w-4 h-4" style={{color: 'var(--color-accent)'}} />
+                <span className="font-medium text-sm">生成质量</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {QUALITY_OPTIONS.map(opt => (
                   <button key={opt.value} onClick={() => setQuality(opt.value)}
-                    className={`flex-1 p-3 rounded-xl text-center transition-all ${quality === opt.value ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
+                    className={`flex-1 p-2 rounded-lg text-center transition-all ${quality === opt.value ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
                     style={quality === opt.value ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {borderColor: 'var(--color-border)'}}>
-                    <div className="font-medium text-sm">{opt.label}</div>
-                    <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>{opt.credits}积分</div>
+                    <div className="font-medium text-xs">{opt.label}</div>
+                    <div className="text-xs" style={{color: 'var(--color-text-muted)'}}>
+                      {(creditsConfig as any)[opt.value]?.[size] || (creditsConfig as any)[opt.value]?.['1024x1024'] || 10}积分
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="card-elevated p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="font-medium">生成数量</span>
+            <div className="card-elevated p-3 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-medium text-sm">生成数量</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {COUNT_OPTIONS.map(opt => (
                   <button key={opt} onClick={() => setN(opt)}
-                    className={`flex-1 p-3 rounded-xl text-center font-medium transition-all ${n === opt ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
+                    className={`flex-1 p-2 rounded-lg text-center font-medium transition-all ${n === opt ? 'border-2' : 'border hover:border-[var(--color-accent)]'}`}
                     style={n === opt ? {borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-accent-light)'} : {borderColor: 'var(--color-border)'}}>
                     {opt} 张
                   </button>
@@ -458,13 +488,13 @@ export const HomePage = () => {
               </div>
             </div>
 
-            <div className="card-elevated p-4 rounded-xl">
+            <div className="card-elevated p-3 rounded-xl">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AdjustmentsHorizontalIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                  <span className="font-medium">高级选项</span>
+                <div className="flex items-center gap-1.5">
+                  <AdjustmentsHorizontalIcon className="w-4 h-4" style={{color: 'var(--color-accent)'}} />
+                  <span className="font-medium text-sm">高级选项</span>
                   {selectedImages.length > 0 && (
-                    <span className="text-xs px-2 py-1 rounded" style={{background: 'var(--color-surface)', color: 'var(--color-text-muted)'}}>
+                    <span className="text-xs px-1.5 py-0.5 rounded" style={{background: 'var(--color-surface)', color: 'var(--color-text-muted)'}}>
                       图片编辑不支持
                     </span>
                   )}
@@ -536,8 +566,8 @@ export const HomePage = () => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="card-elevated p-6 rounded-xl">
-              <div className="mb-4">
+            <div className="card-elevated p-5 rounded-xl">
+              <div className="mb-3">
                 <div className="relative">
                   <textarea
                     value={prompt}
@@ -634,24 +664,24 @@ export const HomePage = () => {
                 </div>
               )}
 
-              <div className="flex items-center gap-2 mb-4" style={{color: 'var(--color-text-muted)'}}>
-                <DocumentTextIcon className="w-5 h-5" />
-                <span className="text-sm">提示词指南</span>
+              <div className="flex items-center gap-2 mb-3" style={{color: 'var(--color-text-muted)'}}>
+                <DocumentTextIcon className="w-4 h-4" />
+                <span className="text-sm font-medium">提示词指南</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="p-4 rounded-lg" style={{background: 'var(--color-surface)'}}>
-                  <div className="font-medium mb-2">✓ 推荐写法</div>
-                  <div className="text-sm space-y-1" style={{color: 'var(--color-text-muted)'}}>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="p-3 rounded-lg" style={{background: 'var(--color-surface)'}}>
+                  <div className="font-medium text-sm mb-1.5">✓ 推荐写法</div>
+                  <div className="text-xs space-y-0.5" style={{color: 'var(--color-text-muted)'}}>
                     <div>• 具体描述主体、场景、动作</div>
                     <div>• 添加风格关键词</div>
                     <div>• 说明光线、色彩、氛围</div>
                     <div>• 使用英文关键词效果更佳</div>
                   </div>
                 </div>
-                <div className="p-4 rounded-lg" style={{background: 'var(--color-surface)'}}>
-                  <div className="font-medium mb-2">✗ 避免写法</div>
-                  <div className="text-sm space-y-1" style={{color: 'var(--color-text-muted)'}}>
+                <div className="p-3 rounded-lg" style={{background: 'var(--color-surface)'}}>
+                  <div className="font-medium text-sm mb-1.5">✗ 避免写法</div>
+                  <div className="text-xs space-y-0.5" style={{color: 'var(--color-text-muted)'}}>
                     <div>• 过于简单或模糊的描述</div>
                     <div>• 多个相互冲突的指令</div>
                     <div>• 要求生成特定文字</div>
@@ -660,12 +690,12 @@ export const HomePage = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg" style={{background: 'var(--color-accent-light)'}}>
-                <div className="flex items-center gap-2 mb-3">
-                  <SparklesIcon className="w-5 h-5" style={{color: 'var(--color-accent)'}} />
-                  <span className="font-medium">当前设置</span>
+              <div className="p-3 rounded-lg" style={{background: 'var(--color-accent-light)'}}>
+                <div className="flex items-center gap-2 mb-2">
+                  <SparklesIcon className="w-4 h-4" style={{color: 'var(--color-accent)'}} />
+                  <span className="font-medium text-sm">当前设置</span>
                 </div>
-                <div className="flex items-center gap-6 text-sm flex-wrap">
+                <div className="flex items-center gap-4 text-xs flex-wrap">
                   <div>
                     <span style={{color: 'var(--color-text-muted)'}}>尺寸：</span>
                     <span className="font-medium">{size}</span>
@@ -691,6 +721,41 @@ export const HomePage = () => {
             </div>
           </div>
         </div>
+      {/* 登录提示弹窗 */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(4px)'}}>
+          <div className="card-elevated p-8 max-w-sm w-full text-center" style={{animation: 'slideUp 0.3s ease-out'}}>
+            <div className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto" style={{color: 'var(--color-accent)'}}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold mb-2" style={{color: 'var(--color-text)'}}>
+              请先登录
+            </h3>
+            <p className="text-sm mb-6" style={{color: 'var(--color-text-muted)'}}>
+              生成图片需要先登录账号，登录后即可开始创作
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="flex-1 py-3 rounded-xl font-medium transition-all"
+                style={{background: 'var(--color-surface)', color: 'var(--color-text)'}}
+              >
+                取消
+              </button>
+              <Link
+                to="/login"
+                className="flex-1 py-3 rounded-xl font-medium text-white text-center transition-all"
+                style={{background: 'var(--color-accent-gradient)'}}
+                onClick={() => setShowLoginModal(false)}
+              >
+                去登录
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
       </main>
     </div>
   );
