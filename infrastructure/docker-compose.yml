@@ -56,7 +56,7 @@ services:
       - app-network
 
   backend:
-    image: godrichao/ai-image-backend:latest
+    image: godrichao/ai-image-backend:v1.0.0
     container_name: ai-image-backend
     ports:
       - "8000:8000"
@@ -89,7 +89,7 @@ services:
       - app-network
 
   celery-worker:
-    image: godrichao/ai-image-backend:latest
+    image: godrichao/ai-image-backend:v1.0.0
     container_name: ai-image-celery-worker
     command: celery -A app.tasks worker --logfile=-
     environment:
@@ -120,7 +120,7 @@ services:
       - app-network
 
   frontend:
-    image: godrichao/ai-image-frontend:latest
+    image: godrichao/ai-image-frontend:v1.0.0
     container_name: ai-image-frontend
     ports:
       - "80:80"
@@ -132,12 +132,10 @@ services:
       - app-network
 
   admin:
-    image: godrichao/ai-image-admin:latest
+    image: godrichao/ai-image-admin:v1.0.0
     container_name: ai-image-admin
     ports:
       - "8001:80"
-    environment:
-      - API_PROXY_URL=${API_PROXY_URL:-http://backend:8000}
     depends_on:
       - backend
     restart: unless-stopped
