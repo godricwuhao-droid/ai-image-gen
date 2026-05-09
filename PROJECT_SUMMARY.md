@@ -3,7 +3,7 @@
 ## ✅ 已完成功能
 
 ### 基础设施
-- ✅ Docker Compose配置（PostgreSQL 16, Redis 7, MinIO）
+- ✅ Docker Compose配置（MySQL 8.0, Redis 7, MinIO）
 - ✅ 完整的项目目录结构
 - ✅ 后端和前端基础配置
 

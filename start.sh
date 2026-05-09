@@ -6,9 +6,9 @@ echo "Starting AI Image Generator..."
 
 cd "$(dirname "$0")"
 
-echo "Starting infrastructure services (PostgreSQL, Redis, MinIO)..."
+echo "Starting infrastructure services (MySQL, Redis, MinIO)..."
 cd infrastructure
-docker compose up -d postgres redis minio
+docker compose up -d mysql redis minio
 
 echo "Waiting for services to be ready..."
 sleep 10
@@ -20,7 +20,7 @@ echo "1. Backend: cd ../backend && source .venv/bin/activate && uvicorn app.main
 echo "2. Frontend: cd ../frontend && npm install && npm run dev"
 echo ""
 echo "Services:"
-echo "- PostgreSQL: localhost:5432"
+echo "- MySQL: localhost:3306"
 echo "- Redis: localhost:6379"
 echo "- MinIO: localhost:9000 (console: localhost:9001)"
 echo "- API: http://localhost:8000"

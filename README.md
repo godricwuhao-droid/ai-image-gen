@@ -1,6 +1,6 @@
 # AI Image Generator
 
-A third-party API-based AI image generation platform built with React, FastAPI, and PostgreSQL.
+A third-party API-based AI image generation platform built with React, FastAPI, and MySQL.
 
 ## Features
 
@@ -16,7 +16,7 @@ A third-party API-based AI image generation platform built with React, FastAPI, 
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Zustand, Vite
 - **Backend**: Python FastAPI, SQLAlchemy, Celery
-- **Database**: PostgreSQL 16
+- **Database**: MySQL 8.0
 - **Cache/Queue**: Redis 7
 - **Object Storage**: MinIO
 - **AI Provider**: OpenAI GPT Images 2.0
@@ -64,7 +64,7 @@ ai-image-gen/
 
 ```bash
 cd ai-image-gen/infrastructure
-docker compose up -d postgres redis minio
+docker compose up -d mysql redis minio
 ```
 
 ### 2. Backend Setup
@@ -99,7 +99,7 @@ The application will be available at:
 ```env
 OPENAI_API_KEY=your-openai-api-key
 OPENAI_BASE_URL=https://api.openai.com/v1
-DATABASE_URL=postgresql+asyncpg://postgres:dev_password@localhost:5432/ai_image_gen
+DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@localhost:3306/ai_image_gen?charset=utf8mb4
 REDIS_URL=redis://localhost:6379/0
 MINIO_ENDPOINT=http://localhost:9000
 MINIO_ACCESS_KEY=minioadmin
