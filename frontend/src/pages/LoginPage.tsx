@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useStore } from '../store';
 import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import api from '../services/api';
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADIql4cCTMzXnJcJ';
+
+declare global {
+  interface Window {
+    turnstile: any;
+  }
+}
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,8 +19,59 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef<HTMLDivElement>(null);
   const { login, isLoading, error } = useStore();
   const navigate = useNavigate();
+
+  // 加载 Cloudflare Turnstile SDK
+  useEffect(() => {
+    if (document.querySelector('script[src*="challenges.cloudflare.com"]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }, []);
+
+  // 初始化 Turnstile widget
+  useEffect(() => {
+    const init = () => {
+      if (window.turnstile && turnstileRef.current && !turnstileRef.current.querySelector('.cf-turnstile')) {
+        window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: 'light',
+          callback: (token: string) => setTurnstileToken(token),
+          'error-callback': () => toast.error('人机验证失败，请重试'),
+          'expiry-callback': () => {
+            setTurnstileToken('');
+            if (window.turnstile) {
+              window.turnstile.reset();
+            }
+          },
+        });
+      }
+    };
+    const timer = setInterval(() => {
+      if (window.turnstile) {
+        clearInterval(timer);
+        init();
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 清理 Turnstile
+  useEffect(() => {
+    return () => {
+      if (window.turnstile && turnstileRef.current) {
+        const widgetId = window.turnstile.getWidget(turnstileRef.current);
+        if (widgetId !== undefined) {
+          window.turnstile.remove(widgetId);
+        }
+      }
+    };
+  }, []);
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,18 +92,31 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (emailError || !email) {
       toast.error('请输入有效的邮箱和密码');
       return;
     }
-    
+
+    if (!turnstileToken) {
+      toast.error('请完成人机验证');
+      return;
+    }
+
     try {
+      // 后端验证 Turnstile token
+      await api.post('/auth/verify-turnstile', { token: turnstileToken });
+      // 执行登录
       await login(email, password);
       toast.success('登录成功');
       navigate('/');
     } catch (err: any) {
       toast.error(err?.response?.data?.detail || '登录失败');
+      // 重置 Turnstile
+      if (window.turnstile) {
+        window.turnstile.reset();
+        setTurnstileToken('');
+      }
     }
   };
 
@@ -91,8 +164,8 @@ export const LoginPage: React.FC = () => {
               <label className="block text-sm font-medium" style={{color: 'var(--color-text)'}}>
                 密码
               </label>
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 className="text-sm hover:underline"
                 style={{color: 'var(--color-accent)'}}
               >
@@ -120,6 +193,11 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Cloudflare Turnstile 人机验证 */}
+          <div className="flex justify-center">
+            <div ref={turnstileRef} />
+          </div>
+
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -134,8 +212,8 @@ export const LoginPage: React.FC = () => {
             </label>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading || !!emailError}
             className={`btn btn-primary w-full ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
@@ -145,8 +223,8 @@ export const LoginPage: React.FC = () => {
 
         <p className="mt-6 text-center" style={{color: 'var(--color-text-muted)'}}>
           还没有账户？{' '}
-          <Link 
-            to="/register" 
+          <Link
+            to="/register"
             className="font-medium hover:underline"
             style={{color: 'var(--color-accent)'}}
           >

@@ -20,6 +20,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// 响应拦截器：401 跳转登录页
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // 避免登录页重复跳转
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export interface GalleryImage {
   id: number;
   user_id: number;

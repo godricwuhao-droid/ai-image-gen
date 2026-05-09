@@ -196,7 +196,8 @@ const GenerationsList: React.FC = () => {
       width: 120,
       render: (_cost: number, record: Generation) => {
         // 优先使用后端返回的费用，如果为0则根据价格表计算
-        const displayCost = _cost && _cost > 0 ? _cost : calculateCost(record.quality, record.size, record.n);
+        const costNum = Number(_cost);
+        const displayCost = costNum > 0 ? costNum : calculateCost(record.quality, record.size, record.n);
         return <span>${displayCost.toFixed(4)}</span>;
       },
     },
@@ -348,7 +349,7 @@ const GenerationsList: React.FC = () => {
               <li>供应商：{selectedGeneration.provider}</li>
             </ul>
             <p><strong>状态：</strong>{getStatusTag(selectedGeneration.status)}</p>
-            <p><strong>费用：</strong>${(() => selectedGeneration.cost_usd && selectedGeneration.cost_usd > 0 ? selectedGeneration.cost_usd : calculateCost(selectedGeneration.quality, selectedGeneration.size, selectedGeneration.n)).toFixed(4)}</p>
+            <p><strong>费用：</strong>${(() => { const c = Number(selectedGeneration.cost_usd); const cost = c > 0 ? c : calculateCost(selectedGeneration.quality, selectedGeneration.size, selectedGeneration.n); return cost.toFixed(4); })()}</p>
             <p><strong>积分：</strong>{selectedGeneration.credits_cost}</p>
             <p><strong>点赞数：</strong>{selectedGeneration.likes_count}</p>
             <p><strong>浏览数：</strong>{selectedGeneration.views_count}</p>

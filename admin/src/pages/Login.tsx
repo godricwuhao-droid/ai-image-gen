@@ -16,13 +16,11 @@ const Login: React.FC = () => {
   useEffect(() => {
     setMounted(true);
 
-    // 检查是否已登录
     const token = localStorage.getItem('admin_token');
     if (token && mounted) {
       window.location.href = '/dashboard';
     }
 
-    // 加载记住的账号密码
     const savedCredentials = localStorage.getItem(STORAGE_KEY);
     if (savedCredentials) {
       try {
@@ -45,7 +43,6 @@ const Login: React.FC = () => {
     try {
       setLoading(true);
 
-      // 如果勾选了记住密码，保存到 localStorage
       if (rememberPassword) {
         localStorage.setItem(
           STORAGE_KEY,

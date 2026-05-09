@@ -10,8 +10,15 @@ from .api.v1.endpoints import (
     admin_templates_router, admin_config_router,
 )
 from .api.v1.endpoints.system.credits_config import router as credits_config_router
+from .api.v1.endpoints.system.events import start_cleanup_task
 
 app = FastAPI(title="AI Image Generator API", version="1.0.0")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """应用启动时启动 SSE 清理任务"""
+    start_cleanup_task()
 
 app.add_middleware(
     CORSMiddleware,

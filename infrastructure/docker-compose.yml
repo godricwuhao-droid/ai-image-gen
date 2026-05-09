@@ -56,10 +56,8 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    container_name: ai_image_backend
+    image: godrichao/ai-image-backend:latest
+    container_name: ai-image-backend
     ports:
       - "8000:8000"
     environment:
@@ -71,11 +69,11 @@ services:
       - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
       - REDIS_URL=redis://redis:6379/0
       - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_PUBLIC_URL=http://localhost:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_PUBLIC_URL=${MINIO_PUBLIC_URL:-http://localhost:9000}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=ai-images
-      - SECRET_KEY=your-secret-key-change-this-in-production
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this-in-production}
       - ACCESS_TOKEN_EXPIRE_MINUTES=1440
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -91,21 +89,19 @@ services:
       - app-network
 
   celery-worker:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    container_name: ai_image_celery_worker
+    image: godrichao/ai-image-backend:latest
+    container_name: ai-image-celery-worker
     command: celery -A app.tasks worker --logfile=-
     environment:
       - DATABASE_URL=mysql+aiomysql://ai_image_user:dev_password@mysql:3306/ai_image_gen?charset=utf8mb4
       - DATABASE_ROOT_URL=mysql+aiomysql://root:root_password@mysql:3306/ai_image_gen?charset=utf8mb4
       - REDIS_URL=redis://redis:6379/0
       - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_PUBLIC_URL=http://localhost:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_PUBLIC_URL=${MINIO_PUBLIC_URL:-http://localhost:9000}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=ai-images
-      - SECRET_KEY=your-secret-key-change-this-in-production
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this-in-production}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-api-key-here}
@@ -124,10 +120,8 @@ services:
       - app-network
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    container_name: ai_image_frontend
+    image: godrichao/ai-image-frontend:latest
+    container_name: ai-image-frontend
     ports:
       - "80:80"
       - "443:443"
@@ -138,13 +132,12 @@ services:
       - app-network
 
   admin:
-    build:
-      context: ../admin
-      dockerfile: Dockerfile
-    image: ai-image-admin:latest
-    container_name: ai_image_admin
+    image: godrichao/ai-image-admin:latest
+    container_name: ai-image-admin
     ports:
       - "8001:80"
+    environment:
+      - API_PROXY_URL=${API_PROXY_URL:-http://backend:8000}
     depends_on:
       - backend
     restart: unless-stopped

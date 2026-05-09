@@ -2,8 +2,24 @@ import logging
 from typing import List
 from celery import Celery
 from app.tasks.celery_app import celery_app
+import asyncio
 
 logger = logging.getLogger(__name__)
+
+
+def _run_async(coro):
+    """在 Celery 任务中安全地运行异步代码"""
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(coro)
+        finally:
+            loop.close()
+    except RuntimeError as e:
+        if "event loop" in str(e):
+            raise RuntimeError(f"无法创建事件循环: {e}")
+        raise
 
 
 @celery_app.task(name="image_edit_task")
@@ -133,5 +149,5 @@ def process_image_edit(generation_id: int, user_id: int, prompt: str, images_bas
                 except:
                     pass
     
-    import asyncio
-    asyncio.run(_process())
+    # 在 Celery worker 中安全地运行异步代码
+    _run_async(_process())

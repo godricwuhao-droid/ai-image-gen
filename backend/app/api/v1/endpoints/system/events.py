@@ -27,8 +27,22 @@ async def cleanup_old_events(interval=300):
             logger.info(f"[SSE] 清理了 {len(keys_to_remove)} 个过期事件")
 
 
-# 在模块加载时启动清理任务
-asyncio.create_task(cleanup_old_events())
+# 清理任务启动标志，避免在 Celery worker 中重复启动
+_cleanup_task_started = False
+
+
+def start_cleanup_task():
+    """延迟启动清理任务，只在有运行中的事件循环时调用"""
+    global _cleanup_task_started
+    if not _cleanup_task_started:
+        try:
+            loop = asyncio.get_running_loop()
+            _cleanup_task_started = True
+            loop.create_task(cleanup_old_events())
+            logger.info("[SSE] 已启动过期事件清理任务")
+        except RuntimeError:
+            # 没有运行中的事件循环（如在 Celery worker 中）
+            pass
 
 
 async def event_generator(user_id: int, generation_id: int):

@@ -15,7 +15,7 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    credits = Column(Integer, default=50)
+    credits = Column(Integer, default=0)
     daily_generation_count = Column(Integer, default=0)
     last_generation_date = Column(DateTime, nullable=True)
     total_generations = Column(Integer, default=0)
