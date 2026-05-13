@@ -56,7 +56,7 @@ services:
       - app-network
 
   backend:
-    image: godrichao/ai-image-backend:v1.0.0
+    image: godrichao/ai-image-backend:v1.0.1
     container_name: ai-image-backend
     ports:
       - "8000:8000"
@@ -120,7 +120,7 @@ services:
       - app-network
 
   frontend:
-    image: godrichao/ai-image-frontend:v1.0.0
+    image: godrichao/ai-image-frontend:v1.0.1
     container_name: ai-image-frontend
     ports:
       - "80:80"
